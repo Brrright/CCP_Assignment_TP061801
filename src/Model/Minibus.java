@@ -8,6 +8,6 @@ package Model;
  *
  * @author mingl
  */
-public class Staff {
-    
+public class Minibus {
+    private int maxPassanger = 10;
 }

@@ -8,6 +8,6 @@ package Model;
  *
  * @author mingl
  */
-public class WaitingArea {
-    private int maxCapacity = 10;
+public class TicketInspector {
+    
 }
