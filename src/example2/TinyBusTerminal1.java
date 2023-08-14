@@ -42,7 +42,25 @@ public class TinyBusTerminal1 {
 
     private static final Semaphore ticketBooths = new Semaphore(2, true);  // two ticket booths
 //    private static boolean ticketMachineWorking = true;
-    private static final AtomicBoolean ticketMachineWorking = new AtomicBoolean(true);
+
+    static class TicketMachine {
+
+        private static final AtomicBoolean working = new AtomicBoolean(true);
+
+        static boolean isWorking() {
+            return working.get();
+        }
+
+        static void setWorking(boolean status) {
+            working.set(status);
+        }
+
+        static void buyTicket(Customer customer) throws InterruptedException {
+            System.out.println("[Customer] Customer " + customer.id + " is buying a ticket from the machine.");
+            Thread.sleep(500);
+            customer.hasTicket = true;
+        }
+    }
 
     static class Customer implements Runnable {
 
@@ -54,11 +72,8 @@ public class TinyBusTerminal1 {
         }
 
         private void buyTicket() throws InterruptedException {
-            if (ticketMachineWorking.get()) {
-                System.out.println("[Customer] Customer " + id + " is buying a ticket from the machine.");
-                Thread.sleep(500);
-                hasTicket = true; // customer now has a ticket
-
+            if (TicketMachine.isWorking()) {
+                TicketMachine.buyTicket(this);
             } else {
                 System.out.println("[Customer] Customer " + id + " is waiting for the ticket booth.");
                 ticketBooths.acquire();
@@ -74,24 +89,12 @@ public class TinyBusTerminal1 {
             try {
                 // Simulate sometimes the ticket machine isn't working
                 if (new java.util.Random().nextInt(10) > 7) {  // 30% chance
-                    ticketMachineWorking.set(false);
+                    TicketMachine.setWorking(false);
                 } else {
-                    ticketMachineWorking.set(true);
+                    TicketMachine.setWorking(true);
                 }
 
-                // Enter terminal if not full
-                if (terminalQueue.remainingCapacity() > 0) {
-//                    System.out.println("[Customer] Customer " + id + " entered the terminal.");
-                    terminalQueue.put(this);
-                } else {
-                    System.out.println("[Terminal] Terminal is full! Customer " + id + " is waiting outside.");
-                    while (terminalQueue.remainingCapacity() <= 0) {
-                        Thread.sleep(1000);  // wait outside for a while
-                    }
-                    terminalQueue.put(this);
-                }
-
-                if (ticketMachineWorking.get()) {
+                if (TicketMachine.isWorking()) {
                     System.out.println("[Customer] Customer " + id + " is buying a ticket from the machine.");
                     Thread.sleep(500);
                 } else {
@@ -120,16 +123,13 @@ public class TinyBusTerminal1 {
         }
 
         public void enterTerminalFromEntrance(int entrance) throws InterruptedException {
-            Queue<Customer> entranceQueue = entrance == WEST_ENTRANCE ? westEntranceQueue : eastEntranceQueue;
-            synchronized (entranceQueue) {
-                if (terminalQueue.remainingCapacity() > 0) {
-                    System.out.println("[Customer] Customer " + id + " entered the terminal from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
-                    terminalQueue.put(this);
-                } else {
-                    System.out.println("[Terminal] Terminal is full! Customer " + id + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
-                    entranceQueue.add(this);
-                    entranceQueue.wait();  // Customer waits at the entrance
-                }
+            if (terminalQueue.remainingCapacity() > 0) {
+                System.out.println("[Customer] Customer " + id + " entered the terminal from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+                terminalQueue.put(this);
+                run();  // Directly proceed with the rest of the logic
+            } else {
+                System.out.println("[Terminal] Terminal is full! Customer " + id + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+                // Let's remove the customer from entrance queues for now for simplicity. This can be re-added later if necessary
             }
         }
 
@@ -183,19 +183,22 @@ public class TinyBusTerminal1 {
             try {
                 while (true) {
                     if (waitingAreaQueue.size() < 10) {
-                        int numLeft = 10 - waitingAreaQueue.size();
-                        System.out.println("[Mini Bus] Minibus waiting for " + numLeft + " customers...");
-                        Thread.sleep(MINIBUS_CHECK_INTERVAL_MS);  // Check again after 10 seconds
+//                        int numLeft = 10 - waitingAreaQueue.size();
+//                        System.out.println("[Mini Bus] Minibus waiting for " + numLeft + " customers...");
+                        Thread.sleep(MINIBUS_CHECK_INTERVAL_MS);
                     } else {
                         for (int i = 0; i < 10 && !waitingAreaQueue.isEmpty(); i++) {
                             Customer customer = waitingAreaQueue.take();
                             onboardingQueue.offer(customer);
-                            System.out.println("[Customer] Customer " + customer.id + " has queue up to enter the bus.");
+                            System.out.println("[Customer] Customer " + customer.id + " has queued up to enter the bus.");
+                            //Ticket checking as customer boards minibus
+                            if (customer.hasTicket) {
+                                System.out.println("[Inspector] Customer " + customer.id + " has a valid ticket.");
+                            } else {
+                                System.out.println("[Inspector] Customer " + customer.id + " was denied boarding due to not having a ticket.");
+                                onboardingQueue.remove(customer);
+                            }
                         }
-
-                        // Request ticket inspector for ticket checking
-                        ownQueue.offer(this);
-                        ownQueue.poll();  // wait for the ticket inspector to finish
 
                         System.out.println("[Mini Bus] Minibus departing...");
                         Thread.sleep(MINIBUS_TRAVEL_TIME_MS);
@@ -243,13 +246,13 @@ public class TinyBusTerminal1 {
     private static void occasionallyBreakTicketMachine(ScheduledExecutorService machineBreaks) {
         machineBreaks.scheduleAtFixedRate(() -> {
             if (new Random().nextInt(10) > 7) {  // 30% chance
-                ticketMachineWorking.set(false);
-                System.out.println("The ticket machine has stopped working.");
+                TicketMachine.setWorking(false);
+                System.out.println("[TMachine] The ticket machine has stopped working.");
             } else {
-                if (!ticketMachineWorking.get()) {
-                    System.out.println("The ticket machine is now back in service.");
+                if (!TicketMachine.isWorking()) {
+                    System.out.println("[TMachine] The ticket machine is now back in service.");
                 }
-                ticketMachineWorking.set(true);
+                TicketMachine.setWorking(true);
             }
         }, 10, 30, TimeUnit.SECONDS);
     }
@@ -258,31 +261,32 @@ public class TinyBusTerminal1 {
         ExecutorService customerExecutor = Executors.newFixedThreadPool(80);
         ExecutorService minibusExecutor = Executors.newSingleThreadExecutor();
 
+
         // <editor-fold>
-        // Occasionally simulate booth staff on break
-//        ScheduledExecutorService staffBreaks = Executors.newScheduledThreadPool(1);
-//
-//        ScheduledExecutorService machineBreaks = Executors.newScheduledThreadPool(1);
-//        occasionallyBreakTicketMachine(machineBreaks);
-//        staffBreaks.scheduleAtFixedRate(() -> {
-//            if (ticketBooths.availablePermits() > 0) {
-//                try {
-//                    ticketBooths.acquire(); // simulate staff going on break
-//                    System.out.println("One ticket booth staff is on a break!");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }, 10, 30, TimeUnit.SECONDS);
-//
-//        staffBreaks.scheduleAtFixedRate(() -> {
-//            if (ticketBooths.availablePermits() < 2) {
-//                ticketBooths.release(); // staff back from break
-//                System.out.println("Ticket booth staff is back from break!");
-//            }
-//        }, 15, 30, TimeUnit.SECONDS);
+//         Occasionally simulate booth staff on break
+        ScheduledExecutorService staffBreaks = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService machineBreaks = Executors.newScheduledThreadPool(1);
+        occasionallyBreakTicketMachine(machineBreaks);
+
+        staffBreaks.scheduleAtFixedRate(() -> {
+            if (ticketBooths.availablePermits() > 0) {
+                try {
+                    ticketBooths.acquire(); // simulate staff going on break
+                    System.out.println("One ticket booth staff is on a break!");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 10, 30, TimeUnit.SECONDS);
+
+        staffBreaks.scheduleAtFixedRate(() -> {
+            if (ticketBooths.availablePermits() < 2) {
+                ticketBooths.release(); // staff back from break
+                System.out.println("Ticket booth staff is back from break!");
+            }
+        }, 15, 30, TimeUnit.SECONDS);
 // </editor-fold>
-//        TinyBusTerminal1 terminal = new TinyBusTerminal1();
+        //        TinyBusTerminal1 terminal = new TinyBusTerminal1();
         // Initialize and start the minibuses
         for (int i = 0; i < NUMBER_OF_MINIBUSES; i++) {
             Minibus minibus = new Minibus(minibusQueues[i]);
@@ -293,11 +297,8 @@ public class TinyBusTerminal1 {
         new Thread(ticketInspector).start();
 
         ScheduledExecutorService entranceExecutor = Executors.newScheduledThreadPool(2);
-
         handleEntrances(entranceExecutor);
 
-//        // Start the minibus
-//        minibusExecutor.submit(new Minibus(ticketInspectorQueue));
         // Simulate customer arrivals
         for (int i = 1; i <= MAX_CUSTOMERS; i++) {
             Customer c = new Customer(i);
@@ -305,7 +306,6 @@ public class TinyBusTerminal1 {
                 new Thread(() -> {
                     try {
                         c.enterTerminalFromEntrance(WEST_ENTRANCE);
-                        c.run();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -314,7 +314,6 @@ public class TinyBusTerminal1 {
                 new Thread(() -> {
                     try {
                         c.enterTerminalFromEntrance(EAST_ENTRANCE);
-                        c.run();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

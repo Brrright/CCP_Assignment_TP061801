@@ -4,10 +4,11 @@
  */
 package Model;
 
-/**
+/** 
  *
  * @author mingl
  */
 public class WaitingArea {
+    private String name;
     private int maxCapacity = 10;
 }

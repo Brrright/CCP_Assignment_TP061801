@@ -1,7 +1,10 @@
 
 import Model.Customer;
 import Model.MinibusTerminal;
-import java.util.Date;
+import static Model.MinibusTerminal.EAST_ENTRANCE;
+import static Model.MinibusTerminal.WEST_ENTRANCE;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -14,6 +17,7 @@ import java.util.Date;
 public class CustomerGenerator implements Runnable {
 
     private MinibusTerminal terminal;
+    private static final int MAX_CUSTOMERS = 80;
 
     public CustomerGenerator(MinibusTerminal terminal) {
         this.terminal = terminal;
@@ -21,11 +25,37 @@ public class CustomerGenerator implements Runnable {
 
     @Override
     public void run() {
-        Customer customer = new Customer(terminal);
-        customer.setInTime(new Date());
-        Thread customer_thread = new Thread(customer);
-        customer.setID("Customer " + customer_thread.getId());
-        customer_thread.start();
+        while(!terminal.isClosed){
+            for (int i = 1; i <= MAX_CUSTOMERS; i++) {
+                Customer c = new Customer(terminal, i);
+                if (new java.util.Random().nextBoolean()) {
+                    new Thread(() -> {
+                        try {
+                            c.enterTerminalFromEntrance(WEST_ENTRANCE);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                } else {
+                    new Thread(() -> {
+                        try {
+                            c.enterTerminalFromEntrance(EAST_ENTRANCE);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+                try {
+                    Thread.sleep(new java.util.Random().nextInt(2) * 1000 + 1000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(CustomerGenerator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            break;
+        }
+        if (terminal.isClosed) {
+            System.out.println("[Terminal] Terminal is closing now. Bye guys :)");
+            return;
+        }
     }
-
 }

@@ -4,6 +4,8 @@
  */
 package Model;
 
+import static Model.MinibusTerminal.WEST_ENTRANCE;
+import static Model.MinibusTerminal.terminalQueue;
 import java.util.Date;
 
 /**
@@ -12,34 +14,25 @@ import java.util.Date;
  */
 public class Customer implements Runnable {
 
-    private String customerID;
-    private Date inTime;
+    private int customerID;
     private MinibusTerminal terminal;
 
-    public Customer(MinibusTerminal terminal) {
+    public Customer(MinibusTerminal terminal, int id) {
         this.terminal = terminal;
+        this.customerID = id;
     }
 
-    public String getID() {
+    public int getID() {
         return this.customerID;
     }
 
-    public Date getInTime() {
-        return this.inTime;
-    }
-
-    public void setID(String ID) {
-        this.customerID = ID;
-    }
-
-    public void setInTime(Date inTime) {
-        this.inTime = inTime;
-    }
-
+//    private void buyTicket() throws InterruptedException
+//    {
+//        
+//    }
     @Override
     public void run() {
-        System.out.println("Customer "+ this.customerID + " is cominggg.");
-        
+
         // enter terminal (destination)
         // buyTicket
         // go to waiting area
@@ -49,6 +42,16 @@ public class Customer implements Runnable {
 
     private synchronized void buyTicket() {
         terminal.add(this);
+    }
+
+    public void enterTerminalFromEntrance(int entrance) throws InterruptedException {
+        if (terminalQueue.remainingCapacity() > 0) {
+            System.out.println("[Customer] Customer " + customerID + " entered the terminal from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+            terminalQueue.put(this);
+            run();  // Directly proceed with the rest of the logic
+        } else {
+            System.out.println("[Terminal] Terminal is full! Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+        }
     }
 
 }
