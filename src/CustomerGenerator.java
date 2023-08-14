@@ -23,9 +23,9 @@ public class CustomerGenerator implements Runnable {
     public void run() {
         Customer customer = new Customer(terminal);
         customer.setInTime(new Date());
-        Thread thcustomer = new Thread(customer);
-        customer.setID("Customer " + thcustomer.getId());
-        thcustomer.start();
+        Thread customer_thread = new Thread(customer);
+        customer.setID("Customer " + customer_thread.getId());
+        customer_thread.start();
     }
 
 }

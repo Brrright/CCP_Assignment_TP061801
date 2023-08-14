@@ -11,7 +11,6 @@ import Model.MinibusTerminal;
  * @author mingl
  */
 public class CCP_Assignment_TP061801 {
-
     /**
      * @param args the command line arguments
      */
@@ -20,5 +19,4 @@ public class CCP_Assignment_TP061801 {
         MinibusTerminal terminal = new MinibusTerminal();
         CustomerGenerator custGenerater = new CustomerGenerator(terminal);
     }
-    
 }
