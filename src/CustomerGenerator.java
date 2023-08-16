@@ -29,7 +29,7 @@ public class CustomerGenerator implements Runnable {
     public void run() {
         while (!terminal.isClosed.get() && counter.incrementAndGet() < MAX_CUSTOMERS) {
             Customer c = new Customer(terminal, counter.get());
-            new Thread(c).start();
+            setEntrance(c);
             // interval
             try {
                 Thread.sleep((long) (Math.random() * 2) * 500);
@@ -41,14 +41,42 @@ public class CustomerGenerator implements Runnable {
         }
         if (terminal.isClosed.get()) {
             try {
-//                if (MinibusTerminal.isClosed.get()) {
-//                    MinibusTerminal.releaseEntranceQueue();
-//                    return;
-//                }
+                if (MinibusTerminal.isClosed.get()) {
+                    MinibusTerminal.releaseEntranceQueue();
+                    return;
+                }
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void setEntrance(Customer c) {
+        if (new java.util.Random().nextBoolean()) {
+            Thread newCust = new Thread(() -> {
+                try {
+                    c.enterTerminalFromEntrance(WEST_ENTRANCE);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            newCust.start();
+            try {
+                newCust.join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+        } else {
+            Thread newCust = new Thread(() -> {
+                try {
+                    c.enterTerminalFromEntrance(EAST_ENTRANCE);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            newCust.start();
         }
     }
 }

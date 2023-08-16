@@ -9,13 +9,26 @@ package Model;
  * @author mingl
  */
 public class Ticket {
+
     private boolean isChecked;
     private Destination destination;
     private Customer customer;
 
-    public Ticket(boolean isChecked, Destination destination, Customer customer) {
-        this.isChecked = isChecked;
+    public Ticket(Destination destination, Customer customer) {
+        this.isChecked = false;
         this.destination = destination;
         this.customer = customer;
+    }
+
+    public Destination getDestination() {
+        return destination;
+    }
+
+    public boolean isCheckedByInspector() {
+        return isChecked;
+    }
+
+    public void check() {
+        this.isChecked = true;
     }
 }

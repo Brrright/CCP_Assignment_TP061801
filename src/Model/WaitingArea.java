@@ -14,9 +14,11 @@ import java.util.concurrent.BlockingQueue;
 public class WaitingArea {
 
     private String name;
-    private int maxCapacity = 10;
+    public static int WAITING_AREA_CAPACITY = 10;
     private static final BlockingQueue<Customer> waitingAreaQueue = new ArrayBlockingQueue<>(MinibusTerminal.TERMINAL_MAX_CAPACITY);
-    
-    
+
+    public WaitingArea(String name) {
+        this.name = name;
+    }
 
 }

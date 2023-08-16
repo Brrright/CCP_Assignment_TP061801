@@ -4,10 +4,8 @@
  */
 package Model;
 
-import static Model.MinibusTerminal.EAST_ENTRANCE;
 import static Model.MinibusTerminal.WEST_ENTRANCE;
 import static Model.MinibusTerminal.terminalQueue;
-import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -18,7 +16,8 @@ public class Customer implements Runnable {
 
     private int customerID;
     private MinibusTerminal terminal;
-    public boolean hasTicket;
+    private Ticket ticket;
+    private boolean hasTicket = false;
 
     public Customer(MinibusTerminal terminal, int id) {
         this.terminal = terminal;
@@ -29,44 +28,40 @@ public class Customer implements Runnable {
         return this.customerID;
     }
 
+    public Ticket getTicket() {
+        return this.ticket;
+    }
+
+    public boolean getHasTicket() {
+        return this.hasTicket;
+    }
+
     @Override
     public void run() {
-        setEntrance(this);
+        buyTicket();
     }
 
-    private synchronized void buyTicket() {
-
-    }
-
-    public void setEntrance(Customer c) {
-        if (new java.util.Random().nextBoolean()) {
-            Thread newCust = new Thread(() -> {
-                try {
-                    c.enterTerminalFromEntrance(WEST_ENTRANCE);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            newCust.start();
-            try {
-                newCust.join();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
+    public void buyTicket() {
+        if (hasTicket) {
+            return;
+        }
+        Destination destination = Destination.values()[new Random().nextInt(Destination.values().length)];
+        this.ticket = new Ticket(destination, this);
+        this.hasTicket = true;
+        int choice = new Random().nextInt(3); // 0 for TicketMachine, 1 and 2 for TicketBooths
+        if (choice == 0) {
+            MinibusTerminal.ticketMachine.addCustomer(this);
+        } else if (choice == 1) {
+            MinibusTerminal.ticketBooth1.addCustomer(this);
         } else {
-            Thread newCust = new Thread(() -> {
-                try {
-                    c.enterTerminalFromEntrance(EAST_ENTRANCE);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            newCust.start();
+            MinibusTerminal.ticketBooth2.addCustomer(this);
         }
     }
 
     public synchronized void enterTerminalFromEntrance(int entrance) throws InterruptedException {
+        if (MinibusTerminal.isClosed.get()) {
+            return; // if terminal is closed, don't process the customer
+        }
         while (!MinibusTerminal.isClosed.get()) {
             if (terminalQueue.remainingCapacity() < 1) {
                 MinibusTerminal.isFull.set(true);
@@ -107,9 +102,7 @@ public class Customer implements Runnable {
                 break;
             }
         }
-
     }
-
 }
 // <editor-fold>
 //        try {
