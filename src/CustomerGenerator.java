@@ -27,52 +27,28 @@ public class CustomerGenerator implements Runnable {
 
     @Override
     public void run() {
-        while (!terminal.isClosed && counter.incrementAndGet() < MAX_CUSTOMERS) {
-            //<editor-fold desc="construct customer & determine from west or east">
+        while (!terminal.isClosed.get() && counter.incrementAndGet() < MAX_CUSTOMERS) {
             Customer c = new Customer(terminal, counter.get());
-            setEntrance(c);
+            new Thread(c).start();
             // interval
             try {
-                Thread.sleep((long) ((Math.random()) * 2) * 1000 + 1000);
+                Thread.sleep((long) (Math.random() * 2) * 500);
+                //TODO: change later
+//                Thread.sleep((long) ((Math.random()) * 2) * 1000 + 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(CustomerGenerator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        if (terminal.isClosed) {
+        if (terminal.isClosed.get()) {
             try {
+//                if (MinibusTerminal.isClosed.get()) {
+//                    MinibusTerminal.releaseEntranceQueue();
+//                    return;
+//                }
                 Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return;
-        }
-    }
-
-    public void setEntrance(Customer c) {
-        if (new java.util.Random().nextBoolean()) {
-            Thread newCust = new Thread(() -> {
-                try {
-                    c.enterTerminalFromEntrance(WEST_ENTRANCE);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            newCust.start();
-            try {
-                newCust.join();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
-        } else {
-            Thread newCust = new Thread(() -> {
-                try {
-                    c.enterTerminalFromEntrance(EAST_ENTRANCE);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            newCust.start();
         }
     }
 }

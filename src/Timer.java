@@ -22,7 +22,8 @@ public class Timer extends Thread {
     public void run() {
         try {
             // Timer for operation hours
-            Thread.sleep(60000);
+            Thread.sleep(10000);
+//            Thread.sleep(60000);
             closeTerminal();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
@@ -31,8 +32,8 @@ public class Timer extends Thread {
 
     public synchronized void closeTerminal() {
         System.out.println("====================================================");
-        System.out.println("[Terminal] We're Closing!");
+        System.out.println("[Terminal] We're closing now! Bye bye guys :]");
         System.out.println("====================================================");
-        MinibusTerminal.isClosed = true;
+        MinibusTerminal.isClosed.set(true);
     }
 }

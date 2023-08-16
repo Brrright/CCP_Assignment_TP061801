@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -21,8 +25,8 @@ public class MinibusTerminal {
 
     public static int MIN_AVAILABLE_CAPACITY = (int) (15 * 0.8);
     public static int WAITING_AREA_CAPACITY = 10;
-    public static boolean isFull = false;
-    public static boolean isClosed = false;
+    public static AtomicBoolean isFull = new AtomicBoolean(false);
+    public static AtomicBoolean isClosed = new AtomicBoolean(false);
 
     public static final int WEST_ENTRANCE = 1;
     public static final int EAST_ENTRANCE = 2;
@@ -31,19 +35,19 @@ public class MinibusTerminal {
     public static final Queue<Customer> westEntranceQueue = new LinkedList<>();
     public static final Queue<Customer> eastEntranceQueue = new LinkedList<>();
     public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
-    public static final BlockingQueue<Customer> foyerQueue = new ArrayBlockingQueue<>(FOYER_QUEUE_SIZE);
-    public static final BlockingQueue<Customer> ticketMachineQueue = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
-    public static final BlockingQueue<Customer> ticketBoothQueue1 = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
-    public static final BlockingQueue<Customer> ticketBoothQueue2 = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
+
+    public static void releaseEntranceQueue() {
+        System.out.println("Customers going back home...");
+        westEntranceQueue.clear();
+        eastEntranceQueue.clear();
+    }
 
     public synchronized void add(Customer customer) {
-//        if ((foyerQueue.size() + ticketMachineQueue.size() + ticketBoothQueue1.size() + ticketBoothQueue2.size()) == TERMINAL_MAX_CAPACITY) {
         if (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
-            isFull = true;
+            isFull.set(true);
         } else {
-//            foyerQueue.add(customer);
             terminalQueue.add(customer);
-            
+
         }
 
     }
