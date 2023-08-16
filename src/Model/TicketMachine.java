@@ -4,10 +4,27 @@
  */
 package Model;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  *
  * @author mingl
  */
 public class TicketMachine {
-    
+
+    private static final AtomicBoolean working = new AtomicBoolean(true);
+
+    static boolean isWorking() {
+        return working.get();
+    }
+
+    static void setWorking(boolean status) {
+        working.set(status);
+    }
+
+    static void buyTicket(Customer customer) throws InterruptedException {
+        System.out.println("[Customer] Customer " + customer.getID() + " is buying a ticket from the Ticket Machine.");
+        Thread.sleep(500);
+        customer.hasTicket = true;
+    }
 }

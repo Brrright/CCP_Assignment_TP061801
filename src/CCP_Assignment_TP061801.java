@@ -18,21 +18,14 @@ public class CCP_Assignment_TP061801 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         MinibusTerminal terminal = new MinibusTerminal();
-//        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-//        executorService.scheduleAtFixedRate(() -> {
-//            for (int i = 60; i >= 0; i--) {
-//                try {
-//                    Thread.sleep(1000);  // sleep for 1 second
-//                } catch (InterruptedException ex) {
-//                    Thread.currentThread().interrupt();
-//                }
-//            }
-//            terminal.isClosed = true;
-//        }, 0, 1, TimeUnit.SECONDS);
         CustomerGenerator custGenerator = new CustomerGenerator(terminal);
+        
+        // create thread
         Thread threadCg = new Thread(custGenerator);
+        Timer timer = new Timer(custGenerator, terminal);
+        // start  operation + timer
         threadCg.start();
+        new Thread(timer).start();
     }
 }

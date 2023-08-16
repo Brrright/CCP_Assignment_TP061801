@@ -16,35 +16,41 @@ import java.util.concurrent.BlockingQueue;
 public class MinibusTerminal {
 
     public static final int TERMINAL_MAX_CAPACITY = 15;
+    public static final int FOYER_QUEUE_SIZE = 6;
+    public static final int BUY_TICKET_QUEUE_SIZE = 3;
+
     public static int MIN_AVAILABLE_CAPACITY = (int) (15 * 0.8);
     public static int WAITING_AREA_CAPACITY = 10;
     public static boolean isFull = false;
-    public boolean isClosed = false;
+    public static boolean isClosed = false;
 
     public static final int WEST_ENTRANCE = 1;
     public static final int EAST_ENTRANCE = 2;
 
     // Shared resources
-    public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
-    public static final BlockingQueue<Customer> waitingAreaQueue = new ArrayBlockingQueue<>(WAITING_AREA_CAPACITY);
     public static final Queue<Customer> westEntranceQueue = new LinkedList<>();
     public static final Queue<Customer> eastEntranceQueue = new LinkedList<>();
+    public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
+    public static final BlockingQueue<Customer> foyerQueue = new ArrayBlockingQueue<>(FOYER_QUEUE_SIZE);
+    public static final BlockingQueue<Customer> ticketMachineQueue = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
+    public static final BlockingQueue<Customer> ticketBoothQueue1 = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
+    public static final BlockingQueue<Customer> ticketBoothQueue2 = new ArrayBlockingQueue<>(BUY_TICKET_QUEUE_SIZE);
 
-    public void add(Customer customer) {
+    public synchronized void add(Customer customer) {
+//        if ((foyerQueue.size() + ticketMachineQueue.size() + ticketBoothQueue1.size() + ticketBoothQueue2.size()) == TERMINAL_MAX_CAPACITY) {
         if (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
             isFull = true;
-            System.out.println("[Terminal] Terminal is full. Customer " + customer.getID() + " is waiting at outside.");
-        }
-        else {
+        } else {
+//            foyerQueue.add(customer);
+            terminalQueue.add(customer);
             
         }
+
+    }
+}
+
+//      <editor-fold>
 //        synchronized (westCustomerList) {
-//            if (westCustomerList.size() == TERMINAL_MAX_CAPACITY) {
-//                isFull = true;
-//                System.out.println("No chair available for customer " + customer.getID());
-//                return;
-//            }
-//
 //            if (isFull) {
 //                System.out.println("Please wait until the terminal capacity reach 80%.");
 //                if (westCustomerList.size() <= MIN_AVAILABLE_CAPACITY) {
@@ -54,10 +60,7 @@ public class MinibusTerminal {
 //            }
 //        }
 //        ((LinkedList<Customer>) westCustomerList).offer(customer);
-
 //        if (westCustomerList.size() == 1) {
 //            westCustomerList.notify(); // This will resolves the wait(), which also resolve the deadlock occuring before.
 //        }
-    }
-
-}
+//       </editor-fold>

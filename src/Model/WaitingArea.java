@@ -4,11 +4,19 @@
  */
 package Model;
 
-/** 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+/**
  *
  * @author mingl
  */
 public class WaitingArea {
+
     private String name;
     private int maxCapacity = 10;
+    private static final BlockingQueue<Customer> waitingAreaQueue = new ArrayBlockingQueue<>(MinibusTerminal.TERMINAL_MAX_CAPACITY);
+    
+    
+
 }
