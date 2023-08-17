@@ -74,7 +74,6 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-//        buyTicket();
     }
 
     public void buyTicket() {
@@ -95,7 +94,6 @@ public class Customer implements Runnable {
             if (terminalQueue.remainingCapacity() < 1) {
                 MinibusTerminal.isFull.set(true);
             }
-            System.out.println("[Terminal] Terminal's capacity: " + terminalQueue.size() + " / " + MinibusTerminal.TERMINAL_MAX_CAPACITY);
 
             System.out.println("[Customer] Customer " + customerID + " is coming from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
             if (MinibusTerminal.isFull.get()) {
@@ -133,27 +131,3 @@ public class Customer implements Runnable {
         }
     }
 }
-// <editor-fold>
-//        try {
-//            if (terminalQueue.remainingCapacity() > 0) {
-//                terminalQueue.put(this);
-//                buyTicket();
-//
-//                int waitingAreaIndex = new Random().nextInt(3);
-////                if (waitingAreas[waitingAreaIndex].offer(this)) {
-////                    System.out.println("[Customer] Customer " + id + " moved to waiting area " + (char) ('A' + waitingAreaIndex));
-////                } else {
-////                    System.out.println("[Waiting Area] Waiting area " + (char) ('A' + waitingAreaIndex) + " is full! Customer " + id + " is waiting in the terminal.");
-////                    waitingAreas[waitingAreaIndex].put(this);
-////                }
-//            }
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//        }
-// enter terminal (destination)
-// buyTicket
-// go to waiting area
-// inspect ticket
-// enter bus
-
-// </editor-fold>

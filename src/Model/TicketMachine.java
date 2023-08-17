@@ -34,11 +34,10 @@ public class TicketMachine implements Runnable {
                     e.printStackTrace();
                 }
                 broken.set(false);
-                System.out.println("[T_Mahine] Restarted machine, available now!");
+                System.out.println("[TMchine] Restarted machine, available now!");
                 continue;
             }
 
-            // Make the delay for checking for a waiting customer
             try {
                 Thread.sleep(100 + new Random().nextInt(300));  // Sleep for a random time between 100ms to 400ms
             } catch (InterruptedException e) {
@@ -51,7 +50,7 @@ public class TicketMachine implements Runnable {
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
                 if (new Random().nextInt(10) > 2) { // 2 in 10 chance for the machine to break
                     System.out.println("****************************************************");
-                    System.out.println("[T_Machine] Machine CRASHED! Restarting...");
+                    System.out.println("[TMachine] Machine CRASHED! Restarting...");
                     broken.set(true);
                     System.out.println("****************************************************");
                     System.out.println("[Customer] Customer " + customer.getID() + ":  AIYO HAIYA, I will go to ticket booth now...");

@@ -54,7 +54,7 @@ public class MinibusTerminal {
     public synchronized void moveCustomerToWaitingArea(Customer customer) throws InterruptedException {
         if (customer.getTicket().getDestination() == Destination.DESTINATION_A && !waitingAreaA.isFull()) {
             waitingAreaA.addToWaitingArea(customer);
-            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size()+ "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
+            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
         } else if (customer.getTicket().getDestination() == Destination.DESTINATION_B && !waitingAreaB.isFull()) {
             waitingAreaB.addToWaitingArea(customer);
             System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area B. (" + waitingAreaB.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
@@ -64,16 +64,7 @@ public class MinibusTerminal {
             System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area C. (" + waitingAreaC.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
 
         } else {
-            if (waitingAreaA.isFull()) {
-                System.out.println("WAA: " + waitingAreaA.getQueue().size());
-            } else if (waitingAreaB.isFull()) {
-                System.out.println("WAB: " + waitingAreaB.getQueue().size());
-            } else if (waitingAreaC.isFull()) {
-                System.out.println("WAC: " + waitingAreaC.getQueue().size());
-            }
-
-            // If corresponding waiting area is full, the customer remains in the foyer.
-            System.out.println("[Terminal] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+            System.out.println("[WaitArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
         }
     }
 
@@ -84,5 +75,15 @@ public class MinibusTerminal {
         }
         terminalQueue.add(customer);
         notifyAll();
+    }
+
+    public WaitingArea getWaitingAreaA() {
+        return this.waitingAreaA;
+    }
+    public WaitingArea getWaitingAreaB() {
+        return this.waitingAreaB;
+    }
+    public WaitingArea getWaitingAreaC() {
+        return this.waitingAreaC;
     }
 }

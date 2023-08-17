@@ -6,7 +6,6 @@ import Model.MinibusTerminal;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 /**
  *
  * @author mingl
@@ -37,7 +36,7 @@ public class EntranceQueueProcessor implements Runnable {
                 }
             }
 
-            // Assuming your Customer class has a timestamp or some identifier indicating when they arrived
+            // comparing timestamp indicating when they arrived
             if (westCustomer != null && (eastCustomer == null || westCustomer.getTimestamp() < eastCustomer.getTimestamp())) {
                 try {
                     terminal.add(westCustomer);
@@ -57,10 +56,8 @@ public class EntranceQueueProcessor implements Runnable {
                     e.printStackTrace();
                 }
             }
-
-            // Sleep a bit before checking again
             try {
-                Thread.sleep(50); // Adjust this value as needed
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

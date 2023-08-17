@@ -36,4 +36,8 @@ public class WaitingArea {
     public void removeCustomer(Customer customer) {
         waitingAreaQueue.remove(customer);
     }
+
+    public String getName() {
+        return this.name;
+    }
 }
