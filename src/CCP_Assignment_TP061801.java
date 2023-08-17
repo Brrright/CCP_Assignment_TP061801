@@ -22,8 +22,8 @@ public class CCP_Assignment_TP061801 {
     public static void main(String[] args) {
         MinibusTerminal terminal = new MinibusTerminal();
 
-        TicketBooth booth1 = new TicketBooth(terminal, "Booth1");
-        TicketBooth booth2 = new TicketBooth(terminal, "Booth2");
+        TicketBooth booth1 = new TicketBooth(terminal, "1");
+        TicketBooth booth2 = new TicketBooth(terminal, "2");
         TicketMachine machine = new TicketMachine(terminal);
 
         // start ticket booths and machine

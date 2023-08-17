@@ -15,10 +15,25 @@ public class WaitingArea {
 
     private String name;
     public static int WAITING_AREA_CAPACITY = 10;
-    private static final BlockingQueue<Customer> waitingAreaQueue = new ArrayBlockingQueue<>(MinibusTerminal.TERMINAL_MAX_CAPACITY);
+    private final BlockingQueue<Customer> waitingAreaQueue = new ArrayBlockingQueue<>(WAITING_AREA_CAPACITY);
 
     public WaitingArea(String name) {
         this.name = name;
     }
+    
+    public BlockingQueue<Customer> getQueue(){
+        return this.waitingAreaQueue;
+    }
 
+    public boolean isFull() {
+        return waitingAreaQueue.size() == WAITING_AREA_CAPACITY;
+    }
+
+    public void addToWaitingArea(Customer customer) throws InterruptedException {
+        waitingAreaQueue.put(customer); // This will wait until there's space available
+    }
+
+    public void removeCustomer(Customer customer) {
+        waitingAreaQueue.remove(customer);
+    }
 }

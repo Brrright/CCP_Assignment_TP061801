@@ -7,6 +7,8 @@ package Model;
 import Model.Customer.Status;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class TicketBooth implements Runnable {
 
     private MinibusTerminal terminal;
+    private AtomicBoolean toiletBreak = new AtomicBoolean(false);
     private String name;
 
     public TicketBooth(MinibusTerminal terminal, String name) {
@@ -27,10 +30,38 @@ public class TicketBooth implements Runnable {
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            Customer customer = terminal.getFirstWaitingCustomer();
+            // check if toilet break.
+            if (toiletBreak.get()) {
+                // Staff is on a toilet break, sleep for a while
+                try {
+                    //TODO: remove later
+                    Thread.sleep(500);
+//                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("[T_Booth" + this.name + "] Staff: I'm back, next customer comeeee!");
+                toiletBreak.set(false);
+            }
 
+            // Make the delay for checking for a waiting customer
+            try {
+                Thread.sleep(100 + new Random().nextInt(300));  // Sleep for a random time between 100ms to 400ms
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Customer customer = terminal.getFirstWaitingCustomerAndSetBeingServed();
 
-            if (customer != null && customer.getStatus() == Status.WAITING) {
+            // set toilet break
+            if ((!MinibusTerminal.isClosed.get()) && customer == null && new Random().nextInt(10) == 0) { // 1 in 10 chance for a toilet break if not serving
+                System.out.println("***********************************************************************************");
+                System.out.println("[T_Booth" + this.name + "] Let's take a toilet break. Ticket Booth " + this.name + " NOT available now, please wait.");
+                System.out.println("***********************************************************************************");
+
+                toiletBreak.set(true);
+            }
+
+            if (customer != null) {
                 customer.setStatus(Customer.Status.BEING_SERVED);
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Booth " + this.name + " available");
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Booth " + this.name);

@@ -28,10 +28,10 @@ public class MinibusTerminal {
     public static final Queue<Customer> westEntranceQueue = new LinkedList<>();
     public static final Queue<Customer> eastEntranceQueue = new LinkedList<>();
 
-//    public static final TicketMachine ticketMachine = new TicketMachine(this);
-//    public static final TicketBooth ticketBooth1 = new TicketBooth();
-//    public static final TicketBooth ticketBooth2 = new TicketBooth();
     public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
+    private final WaitingArea waitingAreaA = new WaitingArea("Area_A");
+    private final WaitingArea waitingAreaB = new WaitingArea("Area_B");
+    private final WaitingArea waitingAreaC = new WaitingArea("Area_C");
 
     public static void releaseEntranceQueue() {
         System.out.println("[Customer] Customers outside are going back home...");
@@ -39,20 +39,38 @@ public class MinibusTerminal {
         eastEntranceQueue.clear();
     }
 
-    public synchronized Customer getFirstWaitingCustomer() {
+    public synchronized Customer getFirstWaitingCustomerAndSetBeingServed() {
         Iterator<Customer> iterator = terminalQueue.iterator();
         while (iterator.hasNext()) {
             Customer c = iterator.next();
-            if (!c.getHasTicket()) {
+            if (c.getStatus() == Customer.Status.WAITING) {
+                c.setStatus(Customer.Status.BEING_SERVED);
                 return c;
             }
         }
         return null;
     }
 
-    public synchronized void moveCustomerToWaitingArea(Customer customer) {
-//        terminalQueue.remove(customer);
-        // try move, if cant move, ...
+    public synchronized void moveCustomerToWaitingArea(Customer customer) throws InterruptedException {
+        if (customer.getTicket().getDestination() == Destination.DESTINATION_A && !waitingAreaA.isFull()) {
+            waitingAreaA.addToWaitingArea(customer);
+        } else if (customer.getTicket().getDestination() == Destination.DESTINATION_B && !waitingAreaB.isFull()) {
+            waitingAreaB.addToWaitingArea(customer);
+        } else if (customer.getTicket().getDestination() == Destination.DESTINATION_C && !waitingAreaC.isFull()) {
+            waitingAreaC.addToWaitingArea(customer);
+        } else {
+            // If corresponding waiting area is full, the customer remains in the foyer.
+            if(waitingAreaA.isFull()) {
+                System.out.println("WAA: " + waitingAreaA.getQueue().size());
+            } else if (waitingAreaB.isFull()) {
+                System.out.println("WAB: " + waitingAreaB.getQueue().size());
+            } else if(waitingAreaC.isFull()) 
+            {
+                System.out.println("WAC: " + waitingAreaC.getQueue().size());
+            }
+            
+            System.out.println("[Terminal] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+        }
     }
 
     public synchronized void add(Customer customer) throws InterruptedException {

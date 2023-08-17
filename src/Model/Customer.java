@@ -7,6 +7,7 @@ package Model;
 import static Model.MinibusTerminal.WEST_ENTRANCE;
 import static Model.MinibusTerminal.terminalQueue;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -24,7 +25,7 @@ public class Customer implements Runnable {
     private int customerID;
     private MinibusTerminal terminal;
     private Ticket ticket;
-    private boolean hasTicket = false;
+    private AtomicBoolean hasTicket = new AtomicBoolean(false);
 
     public Customer(MinibusTerminal terminal, int id) {
         this.terminal = terminal;
@@ -39,7 +40,7 @@ public class Customer implements Runnable {
         return this.ticket;
     }
 
-    public boolean getHasTicket() {
+    public AtomicBoolean getHasTicket() {
         return this.hasTicket;
     }
 
@@ -50,6 +51,21 @@ public class Customer implements Runnable {
     public void setStatus(Status status) {
         this.status = status;
     }
+    
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+    
+    public void setHasTicket(boolean value)
+    {
+        this.hasTicket.set(value);
+    }
+    
+    public void resetTicketStatus(){
+        this.status = Customer.Status.WAITING;
+        this.ticket = null;
+        this.hasTicket.set(false);
+    }
 
     @Override
     public void run() {
@@ -57,12 +73,12 @@ public class Customer implements Runnable {
     }
 
     public void buyTicket() {
-        if (hasTicket) {
+        if (hasTicket.get() || status != Status.BEING_SERVED) {
             return;
         }
         Destination destination = Destination.values()[new Random().nextInt(Destination.values().length)];
         this.ticket = new Ticket(destination, this);
-        this.hasTicket = true;
+        this.hasTicket.set(true);
         System.out.println("[Customer] Customer " + customerID + " bought a ticket for " + destination);
     }
 
