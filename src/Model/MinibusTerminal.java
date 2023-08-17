@@ -4,6 +4,7 @@
  */
 package Model;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -30,7 +31,6 @@ public class MinibusTerminal {
 //    public static final TicketMachine ticketMachine = new TicketMachine(this);
 //    public static final TicketBooth ticketBooth1 = new TicketBooth();
 //    public static final TicketBooth ticketBooth2 = new TicketBooth();
-
     public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
 
     public static void releaseEntranceQueue() {
@@ -39,8 +39,20 @@ public class MinibusTerminal {
         eastEntranceQueue.clear();
     }
 
-    public Customer getNextCustomer() {
-        return terminalQueue.poll();
+    public synchronized Customer getFirstWaitingCustomer() {
+        Iterator<Customer> iterator = terminalQueue.iterator();
+        while (iterator.hasNext()) {
+            Customer c = iterator.next();
+            if (!c.getHasTicket()) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public synchronized void moveCustomerToWaitingArea(Customer customer) {
+//        terminalQueue.remove(customer);
+        // try move, if cant move, ...
     }
 
     public synchronized void add(Customer customer) throws InterruptedException {
@@ -48,7 +60,7 @@ public class MinibusTerminal {
             isFull.set(true);
             wait();
         }
-            terminalQueue.add(customer);
-            notifyAll();
+        terminalQueue.add(customer);
+        notifyAll();
     }
 }

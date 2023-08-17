@@ -14,6 +14,13 @@ import java.util.Random;
  */
 public class Customer implements Runnable {
 
+    public enum Status {
+        WAITING,
+        BEING_SERVED,
+        SERVED
+    }
+
+    private Status status = Status.WAITING;
     private int customerID;
     private MinibusTerminal terminal;
     private Ticket ticket;
@@ -34,6 +41,14 @@ public class Customer implements Runnable {
 
     public boolean getHasTicket() {
         return this.hasTicket;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
@@ -75,21 +90,23 @@ public class Customer implements Runnable {
                     MinibusTerminal.isFull.set(false);
                 }
             }
-            if (terminalQueue.remainingCapacity() > 0) {
-                terminalQueue.add(this);
-                System.out.println("[Customer] Customer " + customerID + " has entered the terminal foyer from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
-                System.out.println("[Terminal] Foyer's capacity: " + terminalQueue.size() + " / " + MinibusTerminal.TERMINAL_MAX_CAPACITY);
-                run();  // Directly proceed with the rest of the logic
-                break;
-            } else {
-                System.out.println("[Terminal] Terminal is full!");
-                System.out.println("[Customer] Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
-                if (entrance == WEST_ENTRANCE) {
-                    MinibusTerminal.westEntranceQueue.add(this);
+            synchronized (MinibusTerminal.terminalQueue) {
+                if (terminalQueue.remainingCapacity() > 0) {
+                    terminalQueue.add(this);
+                    System.out.println("[Customer] Customer " + customerID + " has entered the terminal foyer from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+                    System.out.println("[Terminal] Terminal's capacity: " + terminalQueue.size() + " / " + MinibusTerminal.TERMINAL_MAX_CAPACITY);
+                    run();  // Directly proceed with the rest of the logic
+                    return;
                 } else {
-                    MinibusTerminal.eastEntranceQueue.add(this);
+                    System.out.println("[Terminal] Terminal is full!");
+                    System.out.println("[Customer] Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+                    if (entrance == WEST_ENTRANCE) {
+                        MinibusTerminal.westEntranceQueue.add(this);
+                    } else {
+                        MinibusTerminal.eastEntranceQueue.add(this);
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

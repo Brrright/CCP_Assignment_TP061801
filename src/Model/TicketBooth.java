@@ -4,6 +4,7 @@
  */
 package Model;
 
+import Model.Customer.Status;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
@@ -26,8 +27,11 @@ public class TicketBooth implements Runnable {
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            Customer customer = terminal.getNextCustomer();
-            if (customer != null) {
+            Customer customer = terminal.getFirstWaitingCustomer();
+
+
+            if (customer != null && customer.getStatus() == Status.WAITING) {
+                customer.setStatus(Customer.Status.BEING_SERVED);
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Booth " + this.name + " available");
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Booth " + this.name);
                 try {
@@ -35,6 +39,8 @@ public class TicketBooth implements Runnable {
                     Thread.sleep(600);
 //                    Thread.sleep(3000);  // Simulate time for buying a ticket
                     customer.buyTicket();
+                    customer.setStatus(Customer.Status.SERVED);
+                    terminal.moveCustomerToWaitingArea(customer);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -49,36 +55,3 @@ public class TicketBooth implements Runnable {
         }
     }
 }
-//public class TicketBooth {
-//
-//    private String boothID;
-//    private static final AtomicBoolean isStaffBreak = new AtomicBoolean(false);
-//
-//    public TicketBooth(String boothID) {
-//        this.boothID = boothID;
-//    }
-//
-//    public String getID() {
-//        return this.boothID;
-//    }
-//
-//    public void setID(String id) {
-//        this.boothID = id;
-//    }
-//    
-//    static boolean isAvailable()
-//    {
-//        return isStaffBreak.get();
-//    }
-//    
-//    static void setAvailable(boolean status) {
-//        isStaffBreak.set(status);
-//    }
-//
-//    static void buyTicket(Customer customer) throws InterruptedException {
-//        System.out.println("[T_Booth] Customer " + customer.getID() + " is buying a ticket from the Ticket Booth ");
-//        Thread.sleep(500);
-//        customer.hasTicket = true;
-//        
-//    }
-//}

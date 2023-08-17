@@ -4,11 +4,6 @@
  */
 package Model;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  *
  * @author mingl
@@ -24,7 +19,7 @@ public class TicketMachine implements Runnable {
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            Customer customer = terminal.getNextCustomer();
+            Customer customer = terminal.getFirstWaitingCustomer();
             if (customer != null) {
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Machine available");
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
