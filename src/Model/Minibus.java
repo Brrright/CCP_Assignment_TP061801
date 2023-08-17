@@ -76,12 +76,11 @@ public class Minibus implements Runnable {
                         status = BusStatus.WAITING;
                         break;
                     case WAITING: // INITIAL STATE
-                        System.out.println("[Bus " + id + "] Waiting at terminal (Departure gate " + waitingArea.getName() + ") for departure to " + destination);
-                        System.out.println("[Bus " + id + "] Departing in 10 seconds.");
+                        System.out.println("[Bus " + id + "] Waiting at terminal (Departure gate " + waitingArea.getName() + ") for departure to " + destination + ".  Departing in 10 seconds.");
                         // TODO: remove later
-                        Thread.sleep(3000);
+//                        Thread.sleep(3000);
+                        Thread.sleep(10000);
                         status = BusStatus.DEPARTING;
-//                        Thread.sleep(10000);
 //                        if (waitingArea.getQueue().size() > 0) {
 //                            status = BusStatus.WAITING;
 //                        }

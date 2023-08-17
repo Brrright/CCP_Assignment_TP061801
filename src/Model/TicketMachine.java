@@ -25,11 +25,10 @@ public class TicketMachine implements Runnable {
         while (!MinibusTerminal.isClosed.get()) {
             // if broken 
             if (broken.get()) {
-                // Machine is broken, sleep for a while (simulate fixing duration)
                 try {
                     //TODO: remove later
-                    Thread.sleep(800);
-//                    Thread.sleep(5000); 
+//                    Thread.sleep(800);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -39,7 +38,7 @@ public class TicketMachine implements Runnable {
             }
 
             try {
-                Thread.sleep(100 + new Random().nextInt(300));  // Sleep for a random time between 100ms to 400ms
+                Thread.sleep(100 + new Random().nextInt(200));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -48,12 +47,12 @@ public class TicketMachine implements Runnable {
             if (customer != null) {
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Machine available");
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
-                if (new Random().nextInt(10) > 2) { // 2 in 10 chance for the machine to break
+                if (new Random().nextInt(10) > 1) { // 1 in 10 chance for the machine to break
                     System.out.println("****************************************************");
                     System.out.println("[TMachine] Machine CRASHED! Restarting...");
                     broken.set(true);
                     System.out.println("****************************************************");
-                    System.out.println("[Customer] Customer " + customer.getID() + ":  AIYO HAIYA, I will go to ticket booth now...");
+                    System.out.println("[Customer] Customer " + customer.getID() + ":  \"AIYO HAIYA, I will go to ticket booth now...\"");
                     customer.resetTicketStatus();
 //                    customer.setStatus(Customer.Status.WAITING);
 //                    customer.setTicket(null);
@@ -62,8 +61,8 @@ public class TicketMachine implements Runnable {
                 }
                 try {
                     //TODO: remove later
-                    Thread.sleep(600);
-//                    Thread.sleep(3000);  // Simulate time for buying a ticket
+//                    Thread.sleep(600);
+                    Thread.sleep(1000);  // buy ticket
                     customer.buyTicket();
                     customer.setStatus(Customer.Status.SERVED);
                     terminal.moveCustomerToWaitingArea(customer);

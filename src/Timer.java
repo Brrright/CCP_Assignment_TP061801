@@ -22,8 +22,9 @@ public class Timer extends Thread {
     public void run() {
         try {
             // Timer for operation hours
-            Thread.sleep(10000);
-//            Thread.sleep(60000);
+            // TODO: Remove later
+//            Thread.sleep(10000);
+            Thread.sleep(60000);
             closeTerminal();
         } catch (InterruptedException ex) {
             ex.printStackTrace();

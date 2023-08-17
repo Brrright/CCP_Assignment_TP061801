@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MinibusTerminal {
 
     public static final int TERMINAL_MAX_CAPACITY = 15;
-    public static int MIN_AVAILABLE_CAPACITY = (int) (15 * 0.8); // 80%
+    public static int MIN_AVAILABLE_CAPACITY = (int) (15 * 0.8); // 80% //12
 
     public static AtomicBoolean isFull = new AtomicBoolean(false);
     public static AtomicBoolean isClosed = new AtomicBoolean(false);
@@ -52,6 +52,8 @@ public class MinibusTerminal {
     }
 
     public synchronized void moveCustomerToWaitingArea(Customer customer) throws InterruptedException {
+        printTerminalAndWaitingAreaCapacity();
+
         if (customer.getTicket().getDestination() == Destination.DESTINATION_A && !waitingAreaA.isFull()) {
             waitingAreaA.addToWaitingArea(customer);
             System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
@@ -62,28 +64,46 @@ public class MinibusTerminal {
         } else if (customer.getTicket().getDestination() == Destination.DESTINATION_C && !waitingAreaC.isFull()) {
             waitingAreaC.addToWaitingArea(customer);
             System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area C. (" + waitingAreaC.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-
         } else {
             System.out.println("[WaitArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+            return;
         }
+        terminalQueue.remove(customer);
     }
 
-    public synchronized void add(Customer customer) throws InterruptedException {
-        while (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
-            isFull.set(true);
-            wait();
+    public void add(Customer customer) throws InterruptedException {
+        synchronized (this) {
+            while (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
+                isFull.set(true);
+                wait();
+            }
         }
         terminalQueue.add(customer);
-        notifyAll();
+        synchronized (this) {
+            notifyAll();
+        }
     }
 
     public WaitingArea getWaitingAreaA() {
         return this.waitingAreaA;
     }
+
     public WaitingArea getWaitingAreaB() {
         return this.waitingAreaB;
     }
+
     public WaitingArea getWaitingAreaC() {
         return this.waitingAreaC;
+    }
+
+    private void printTerminalAndWaitingAreaCapacity() {
+        System.out.println("-------------------------------------------------------");
+        System.out.println("Summary report for current terminal situation");
+        System.out.println("[TMN] TER capacity : " + terminalQueue.size());
+        System.out.println("[WAA] WAA capacity : " + waitingAreaA.getQueue().size());
+        System.out.println("[WAB] WAB capacity : " + waitingAreaB.getQueue().size());
+        System.out.println("[WAC] WAC capacity : " + waitingAreaC.getQueue().size());
+        System.out.println("-------------------------------------------------------");
+
     }
 }

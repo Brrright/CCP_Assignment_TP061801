@@ -32,9 +32,9 @@ public class CustomerGenerator implements Runnable {
             setEntrance(c);
             // interval
             try {
-                Thread.sleep((long) (Math.random() * 2) * 500);
                 //TODO: change later
-//                Thread.sleep((long) ((Math.random()) * 2) * 1000 + 1000);
+//                Thread.sleep((long) (Math.random() * 2) * 500);
+                Thread.sleep((long) ((Math.random()) * 2) * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(CustomerGenerator.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -50,6 +50,7 @@ public class CustomerGenerator implements Runnable {
                 e.printStackTrace();
             }
         }
+        // checking terminal queue, if no people, do notify all thread
     }
 
     public void setEntrance(Customer c) {

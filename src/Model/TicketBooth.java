@@ -35,8 +35,8 @@ public class TicketBooth implements Runnable {
                 // Staff is on a toilet break, sleep for a while
                 try {
                     //TODO: remove later
-                    Thread.sleep(500);
-//                    Thread.sleep(2000);
+//                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -46,7 +46,7 @@ public class TicketBooth implements Runnable {
 
             // Make the delay for checking for a waiting customer
             try {
-                Thread.sleep(100 + new Random().nextInt(300));  // Sleep for a random time between 100ms to 400ms
+                Thread.sleep(100 + new Random().nextInt(200));  // Sleep for a random time between 100ms to 400ms
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -67,8 +67,8 @@ public class TicketBooth implements Runnable {
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Booth " + this.name);
                 try {
                     //TODO: remove later
-                    Thread.sleep(600);
-//                    Thread.sleep(3000);  // Simulate time for buying a ticket
+//                    Thread.sleep(600);
+                    Thread.sleep(2000); // buying tickets
                     customer.buyTicket();
                     customer.setStatus(Customer.Status.SERVED);
                     terminal.moveCustomerToWaitingArea(customer);
@@ -78,7 +78,7 @@ public class TicketBooth implements Runnable {
             } else {
                 // If no customer, they can wait a bit before checking again.
                 try {
-                    Thread.sleep(200);  // Sleep for 200ms before checking again
+                    Thread.sleep(200); // set a interval
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

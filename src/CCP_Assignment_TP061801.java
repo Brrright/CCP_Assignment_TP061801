@@ -41,7 +41,9 @@ public class CCP_Assignment_TP061801 {
 
         // start  operation + timer
         CustomerGenerator custGenerator = new CustomerGenerator(terminal);
-        new Thread(custGenerator).start();
+        Thread cgThread = new Thread(custGenerator);
+        cgThread.start();
+
         Timer timer = new Timer(custGenerator, terminal);
         new Thread(timer).start();
     }
