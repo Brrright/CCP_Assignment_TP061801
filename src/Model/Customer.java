@@ -25,15 +25,21 @@ public class Customer implements Runnable {
     private int customerID;
     private MinibusTerminal terminal;
     private Ticket ticket;
+    private final long timestamp;
     private AtomicBoolean hasTicket = new AtomicBoolean(false);
 
     public Customer(MinibusTerminal terminal, int id) {
         this.terminal = terminal;
         this.customerID = id;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public int getID() {
         return this.customerID;
+    }
+    
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
     public Ticket getTicket() {
@@ -51,17 +57,16 @@ public class Customer implements Runnable {
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
     public void setTicket(Ticket ticket) {
         this.ticket = ticket;
     }
-    
-    public void setHasTicket(boolean value)
-    {
+
+    public void setHasTicket(boolean value) {
         this.hasTicket.set(value);
     }
-    
-    public void resetTicketStatus(){
+
+    public void resetTicketStatus() {
         this.status = Customer.Status.WAITING;
         this.ticket = null;
         this.hasTicket.set(false);
@@ -90,6 +95,8 @@ public class Customer implements Runnable {
             if (terminalQueue.remainingCapacity() < 1) {
                 MinibusTerminal.isFull.set(true);
             }
+            System.out.println("[Terminal] Terminal's capacity: " + terminalQueue.size() + " / " + MinibusTerminal.TERMINAL_MAX_CAPACITY);
+
             System.out.println("[Customer] Customer " + customerID + " is coming from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
             if (MinibusTerminal.isFull.get()) {
                 if (MinibusTerminal.terminalQueue.remainingCapacity() < MinibusTerminal.MIN_AVAILABLE_CAPACITY) {
@@ -110,7 +117,6 @@ public class Customer implements Runnable {
                 if (terminalQueue.remainingCapacity() > 0) {
                     terminalQueue.add(this);
                     System.out.println("[Customer] Customer " + customerID + " has entered the terminal foyer from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
-                    System.out.println("[Terminal] Terminal's capacity: " + terminalQueue.size() + " / " + MinibusTerminal.TERMINAL_MAX_CAPACITY);
                     run();  // Directly proceed with the rest of the logic
                     return;
                 } else {

@@ -54,7 +54,7 @@ public class TicketMachine implements Runnable {
                     System.out.println("[T_Machine] Machine CRASHED! Restarting...");
                     broken.set(true);
                     System.out.println("****************************************************");
-                    System.out.println("[Customer] Customer " + customer.getID() + ":  AIYO Haiz, I will requeue again... #:[");
+                    System.out.println("[Customer] Customer " + customer.getID() + ":  AIYO HAIYA, I will go to ticket booth now...");
                     customer.resetTicketStatus();
 //                    customer.setStatus(Customer.Status.WAITING);
 //                    customer.setTicket(null);

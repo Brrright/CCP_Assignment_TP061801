@@ -25,11 +25,13 @@ public class CCP_Assignment_TP061801 {
         TicketBooth booth1 = new TicketBooth(terminal, "1");
         TicketBooth booth2 = new TicketBooth(terminal, "2");
         TicketMachine machine = new TicketMachine(terminal);
+        EntranceQueueProcessor queueProcessor = new EntranceQueueProcessor(terminal); 
 
         // start ticket booths and machine
         new Thread(booth1).start();
         new Thread(booth2).start();
         new Thread(machine).start();
+        new Thread(queueProcessor).start();
 
         // create thread
         // start  operation + timer
