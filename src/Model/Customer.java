@@ -99,7 +99,7 @@ public class Customer implements Runnable {
             if (MinibusTerminal.isFull.get()) {
                 if (MinibusTerminal.terminalQueue.size() > MinibusTerminal.MIN_AVAILABLE_CAPACITY) {
                     System.out.println("[Terminal] Still a lot of people, please wait for a while.");
-                    System.out.println("[Customer] Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance. (west entrance queue: ");
+                    System.out.println("[Customer] Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
                     if (entrance == WEST_ENTRANCE) {
                         MinibusTerminal.westEntranceQueue.add(this);
                     } else {

@@ -27,13 +27,11 @@ public class CustomerGenerator implements Runnable {
 
     @Override
     public void run() {
-        while (!terminal.isClosed.get() && counter.incrementAndGet() < MAX_CUSTOMERS) {
+        while (!terminal.isClosed.get() && counter.incrementAndGet() <= MAX_CUSTOMERS) {
             Customer c = new Customer(terminal, counter.get());
             setEntrance(c);
             // interval
             try {
-                //TODO: change later
-//                Thread.sleep((long) (Math.random() * 2) * 500);
                 Thread.sleep((long) ((Math.random()) * 2) * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(CustomerGenerator.class.getName()).log(Level.SEVERE, null, ex);

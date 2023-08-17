@@ -1,5 +1,6 @@
 
 import Model.Destination;
+import Model.Inspector;
 import Model.Minibus;
 import Model.MinibusTerminal;
 import Model.TicketBooth;
@@ -25,9 +26,10 @@ public class CCP_Assignment_TP061801 {
         TicketBooth booth1 = new TicketBooth(terminal, "1");
         TicketBooth booth2 = new TicketBooth(terminal, "2");
         TicketMachine machine = new TicketMachine(terminal);
-        Minibus busA = new Minibus("A", Destination.DESTINATION_A, terminal);
-        Minibus busB = new Minibus("B", Destination.DESTINATION_B, terminal);
-        Minibus busC = new Minibus("C", Destination.DESTINATION_C, terminal);
+        Inspector inspector = new Inspector(terminal);
+        Minibus busA = new Minibus("A", Destination.DESTINATION_A, terminal, inspector);
+        Minibus busB = new Minibus("B", Destination.DESTINATION_B, terminal, inspector);
+        Minibus busC = new Minibus("C", Destination.DESTINATION_C, terminal, inspector);
 
         // start ticket booths and machine
         new Thread(booth1).start();
@@ -36,8 +38,7 @@ public class CCP_Assignment_TP061801 {
         new Thread(busA).start();
         new Thread(busB).start();
         new Thread(busC).start();
-//        EntranceQueueProcessor queueProcessor = new EntranceQueueProcessor(terminal);
-//        new Thread(queueProcessor).start();
+        new Thread(inspector).start();
 
         // start  operation + timer
         CustomerGenerator custGenerator = new CustomerGenerator(terminal);

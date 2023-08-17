@@ -5,6 +5,7 @@
 package Model;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
@@ -19,6 +20,18 @@ public class Minibus implements Runnable {
         WAITING
     }
 
+    private AtomicBoolean hasArrived = new AtomicBoolean(false);
+
+    public void setArrivalStatus(boolean status) {
+        this.hasArrived.set(status);
+    }
+
+    public void arrive(Inspector inspector) {
+        // Bus arrival logic...
+        setArrivalStatus(true);
+        inspector.signalArrival(); // Notifying the inspector that a bus has arrived
+    }
+
     private static final int MAX_CAPACITY = 10;
 
     private String id;
@@ -28,13 +41,15 @@ public class Minibus implements Runnable {
     private long delay = 0;
     private boolean isDelayed;
     private WaitingArea waitingArea;
+    private Inspector inspector;
 
-    public Minibus(String id, Destination destination, MinibusTerminal terminal) {
+    public Minibus(String id, Destination destination, MinibusTerminal terminal, Inspector inspector) {
         this.id = id;
         this.destination = destination;
         this.terminal = terminal;
         this.status = BusStatus.WAITING;
         this.isDelayed = false;
+        this.inspector = inspector;
         switch (destination) {
             case DESTINATION_A:
                 waitingArea = terminal.getWaitingAreaA();
@@ -52,7 +67,7 @@ public class Minibus implements Runnable {
         this.isDelayed = true;
         this.delay = delay;
     }
-    
+
     public void setNoDelay() {
         this.isDelayed = false;
         this.delay = 0;
@@ -65,8 +80,8 @@ public class Minibus implements Runnable {
                 switch (status) {
                     case ARRIVING:
                         System.out.println("[Bus " + id + "] is coming in 5 seconds.");
-                        Thread.sleep(5000); 
-                        if(new Random().nextInt(10) > 2) {
+                        Thread.sleep(5000);
+                        if (new Random().nextInt(10) > 2) {
                             System.out.println("[Bus " + id + "] is DELAYED for another 5 seconds.");
                             this.setDelay(5000);
                             Thread.sleep(delay);
@@ -81,9 +96,6 @@ public class Minibus implements Runnable {
 //                        Thread.sleep(3000);
                         Thread.sleep(10000);
                         status = BusStatus.DEPARTING;
-//                        if (waitingArea.getQueue().size() > 0) {
-//                            status = BusStatus.WAITING;
-//                        }
                         break;
                     case DEPARTING:
                         // Take the customers from the waiting area
@@ -94,15 +106,14 @@ public class Minibus implements Runnable {
                             System.out.println("[Bus " + id + "] Customers " + customer.getID() + " onboarding the bus " + this.id);
                             customersServed++;
                         }
-                        System.out.println("[Bus " + id + "] Lesgo! Departing to " + destination + "(Customer onboarded: " + customersServed+")");
-                        // Simulate travel to destination
-                        Thread.sleep(5000); 
+                        System.out.println("[Bus " + id + "] Lesgo! Departing to " + destination + " (Customer onboarded: " + customersServed + ")");
+                        Thread.sleep(5000);
                         System.out.println("[Bus " + id + "] Delivered " + customersServed + " customers to " + destination);
                         status = BusStatus.RETURNING;
                         break;
                     case RETURNING:
                         System.out.println("[Bus " + id + "] Returning from " + destination);
-                        Thread.sleep(5000); // 5 seconds to simulate return
+                        Thread.sleep(5000);
                         status = BusStatus.WAITING;
                         break;
                 }

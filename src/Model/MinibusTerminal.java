@@ -99,10 +99,10 @@ public class MinibusTerminal {
     private void printTerminalAndWaitingAreaCapacity() {
         System.out.println("-------------------------------------------------------");
         System.out.println("Summary report for current terminal situation");
-        System.out.println("[TMN] TER capacity : " + terminalQueue.size());
-        System.out.println("[WAA] WAA capacity : " + waitingAreaA.getQueue().size());
-        System.out.println("[WAB] WAB capacity : " + waitingAreaB.getQueue().size());
-        System.out.println("[WAC] WAC capacity : " + waitingAreaC.getQueue().size());
+        System.out.println("[TMN]  capacity : " + terminalQueue.size());
+        System.out.println("[WAA]  capacity : " + waitingAreaA.getQueue().size());
+        System.out.println("[WAB]  capacity : " + waitingAreaB.getQueue().size());
+        System.out.println("[WAC]  capacity : " + waitingAreaC.getQueue().size());
         System.out.println("-------------------------------------------------------");
 
     }

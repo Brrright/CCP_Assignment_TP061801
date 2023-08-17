@@ -4,18 +4,19 @@
  */
 package Model;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  *
  * @author mingl
  */
 public class Ticket {
 
-    private boolean isChecked;
     private Destination destination;
     private Customer customer;
+    private AtomicBoolean isCheckedByInspector = new AtomicBoolean(false);
 
     public Ticket(Destination destination, Customer customer) {
-        this.isChecked = false;
         this.destination = destination;
         this.customer = customer;
     }
@@ -25,10 +26,10 @@ public class Ticket {
     }
 
     public boolean isCheckedByInspector() {
-        return isChecked;
+        return isCheckedByInspector.get();
     }
 
-    public void check() {
-        this.isChecked = true;
+    public void setCheckedByInspector(boolean value) {
+        isCheckedByInspector.set(value);
     }
 }
