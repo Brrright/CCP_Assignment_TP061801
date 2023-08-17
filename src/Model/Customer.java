@@ -38,7 +38,7 @@ public class Customer implements Runnable {
 
     @Override
     public void run() {
-        buyTicket();
+//        buyTicket();
     }
 
     public void buyTicket() {
@@ -48,14 +48,7 @@ public class Customer implements Runnable {
         Destination destination = Destination.values()[new Random().nextInt(Destination.values().length)];
         this.ticket = new Ticket(destination, this);
         this.hasTicket = true;
-        int choice = new Random().nextInt(3); // 0 for TicketMachine, 1 and 2 for TicketBooths
-        if (choice == 0) {
-            MinibusTerminal.ticketMachine.addCustomer(this);
-        } else if (choice == 1) {
-            MinibusTerminal.ticketBooth1.addCustomer(this);
-        } else {
-            MinibusTerminal.ticketBooth2.addCustomer(this);
-        }
+        System.out.println("[Customer] Customer " + customerID + " bought a ticket for " + destination);
     }
 
     public synchronized void enterTerminalFromEntrance(int entrance) throws InterruptedException {
@@ -69,9 +62,6 @@ public class Customer implements Runnable {
             System.out.println("[Customer] Customer " + customerID + " is coming from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
             if (MinibusTerminal.isFull.get()) {
                 if (MinibusTerminal.terminalQueue.remainingCapacity() < MinibusTerminal.MIN_AVAILABLE_CAPACITY) {
-//                    System.out.println("terminal queue size: " + terminalQueue.size());
-//                    System.out.println("min_available_capacity: " + MinibusTerminal.MIN_AVAILABLE_CAPACITY);
-//                    System.out.println("[Terminal] Still a lot of people, please wait until the terminal capacity become lesser than " + (terminalQueue.size() / MinibusTerminal.MIN_AVAILABLE_CAPACITY) + "customers.");
                     System.out.println("[Terminal] Still a lot of people, please wait for a while.");
                     System.out.println("[Customer] Customer " + customerID + " is waiting at " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
                     if (entrance == WEST_ENTRANCE) {

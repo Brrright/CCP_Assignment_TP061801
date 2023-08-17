@@ -27,23 +27,28 @@ public class MinibusTerminal {
     public static final Queue<Customer> westEntranceQueue = new LinkedList<>();
     public static final Queue<Customer> eastEntranceQueue = new LinkedList<>();
 
-    public static final TicketMachine ticketMachine = new TicketMachine();
-    public static final TicketBooth ticketBooth1 = new TicketBooth();
-    public static final TicketBooth ticketBooth2 = new TicketBooth();
+//    public static final TicketMachine ticketMachine = new TicketMachine(this);
+//    public static final TicketBooth ticketBooth1 = new TicketBooth();
+//    public static final TicketBooth ticketBooth2 = new TicketBooth();
 
     public static final BlockingQueue<Customer> terminalQueue = new ArrayBlockingQueue<>(TERMINAL_MAX_CAPACITY);
 
     public static void releaseEntranceQueue() {
-        System.out.println("[Customer] Customers are going back home...");
+        System.out.println("[Customer] Customers outside are going back home...");
         westEntranceQueue.clear();
         eastEntranceQueue.clear();
     }
 
-    public synchronized void add(Customer customer) {
-        if (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
+    public Customer getNextCustomer() {
+        return terminalQueue.poll();
+    }
+
+    public synchronized void add(Customer customer) throws InterruptedException {
+        while (terminalQueue.size() == TERMINAL_MAX_CAPACITY) {
             isFull.set(true);
-        } else {
-            terminalQueue.add(customer);
+            wait();
         }
+            terminalQueue.add(customer);
+            notifyAll();
     }
 }

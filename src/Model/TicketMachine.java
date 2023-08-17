@@ -15,60 +15,35 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TicketMachine implements Runnable {
 
-    private final Queue<Customer> customers = new LinkedList<>();
-    private final Lock lock = new ReentrantLock();
+    private MinibusTerminal terminal;
 
-    public void addCustomer(Customer customer) {
-        lock.lock();
-        try {
-            customers.add(customer);
-        } finally {
-            lock.unlock();
-        }
+    public TicketMachine(MinibusTerminal terminal) {
+        this.terminal = terminal;
     }
 
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            lock.lock();
-            try {
-                if (!customers.isEmpty()) {
-                    Customer customer = customers.poll();
-                    System.out.println("[TMachine] Customer " + customer.getID() + " is buying a ticket.");
-                    customer.buyTicket();  // Customer purchases ticket here
-                    System.out.println("[TMachine] Customer " + customer.getID() + " got ticket for " + customer.getTicket().getDestination());
-                    Thread.sleep(1000); // simulate time taken to buy a ticket
-                } else {
-                    try {
-                        Thread.sleep(500); // sleep for half a second before checking the queue again
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            Customer customer = terminal.getNextCustomer();
+            if (customer != null) {
+                System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Machine available");
+                System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
+                try {
+                    //TODO: remove later
+                    Thread.sleep(600);
+//                    Thread.sleep(3000);  // Simulate time for buying a ticket
+                    customer.buyTicket();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                lock.unlock();
+            } else {
+                // If no customer, they can wait a bit before checking again.
+                try {
+                    Thread.sleep(200);  // Sleep for 200ms before checking again
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 }
-
-//public class TicketMachine {
-//
-//    private static final AtomicBoolean working = new AtomicBoolean(true);
-//
-//    static boolean isWorking() {
-//        return working.get();
-//    }
-//
-//    static void setWorking(boolean status) {
-//        working.set(status);
-//    }
-//
-////    static void buyTicket(Customer customer) throws InterruptedException {
-////        System.out.println("[Customer] Customer " + customer.getID() + " is buying a ticket from the Ticket Machine.");
-////        Thread.sleep(500);
-////        customer.hasTicket = true;
-////    }
-//}

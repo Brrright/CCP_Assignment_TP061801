@@ -15,39 +15,36 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class TicketBooth implements Runnable {
 
-    private final Queue<Customer> customers = new LinkedList<>();
-    private final Lock lock = new ReentrantLock();
+    private MinibusTerminal terminal;
+    private String name;
 
-    public void addCustomer(Customer customer) {
-        lock.lock();
-        try {
-            customers.add(customer);
-        } finally {
-            lock.unlock();
-        }
+    public TicketBooth(MinibusTerminal terminal, String name) {
+        this.terminal = terminal;
+        this.name = name;
     }
 
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            lock.lock();
-            try {
-                if (!customers.isEmpty()) {
-                    Customer customer = customers.poll();
-                    System.out.println("[T_Booth] Customer " + customer.getID() + " is buying a ticket.");
-                    Thread.sleep(2000); // simulate time taken to buy a ticket
-//                    customer.hasTicket = true;
-                } else {
-                    try {
-                        Thread.sleep(500); // sleep for half a second before checking the queue again
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            Customer customer = terminal.getNextCustomer();
+            if (customer != null) {
+                System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Booth " + this.name + " available");
+                System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Booth " + this.name);
+                try {
+                    //TODO: remove later
+                    Thread.sleep(600);
+//                    Thread.sleep(3000);  // Simulate time for buying a ticket
+                    customer.buyTicket();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                lock.unlock();
+            } else {
+                // If no customer, they can wait a bit before checking again.
+                try {
+                    Thread.sleep(200);  // Sleep for 200ms before checking again
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
