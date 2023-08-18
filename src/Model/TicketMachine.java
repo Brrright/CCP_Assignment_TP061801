@@ -23,7 +23,6 @@ public class TicketMachine implements Runnable {
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            System.out.println("...machine working1");
             // if broken 
             if (broken.get()) {
                 try {
@@ -34,21 +33,21 @@ public class TicketMachine implements Runnable {
                     e.printStackTrace();
                 }
                 broken.set(false);
-                System.out.println("[TMachine] Restarted machine, available now!");
+                System.out.println("[TMchine] Restarted machine, available now!");
                 continue;
             }
-            System.out.println("...machine working2");
+
             try {
                 Thread.sleep(100 + new Random().nextInt(200));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("...machine working3");
+
             Customer customer = terminal.getFirstWaitingCustomerAndSetBeingServed();
             if (customer != null) {
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Machine available");
-                System.out.println("[TMachine] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
-                if (new Random().nextInt(12) < 1) { // 1 in 12 chance for the machine to break
+                System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
+                if (new Random().nextInt(15) < 1) { // 1 in 15 chance for the machine to break
                     System.out.println("****************************************************");
                     System.out.println("[TMachine] Machine CRASHED! Restarting...");
                     broken.set(true);

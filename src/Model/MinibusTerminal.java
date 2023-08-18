@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MinibusTerminal {
 
     public static final int TERMINAL_MAX_CAPACITY = 15;
-    public static int MIN_AVAILABLE_CAPACITY = (int) (TERMINAL_MAX_CAPACITY * 0.8); // 80% //12
+    public static int MIN_AVAILABLE_CAPACITY = (int) (15 * 0.8); // 80% //12
 
     public static AtomicBoolean isFull = new AtomicBoolean(false);
     public static AtomicBoolean isClosed = new AtomicBoolean(false);
@@ -41,15 +41,11 @@ public class MinibusTerminal {
     }
 
     public synchronized Customer getFirstWaitingCustomerAndSetBeingServed() {
-        System.out.println("[DEBUG] Checking for waiting customers...");
         Iterator<Customer> iterator = terminalQueue.iterator();
         while (iterator.hasNext()) {
             Customer c = iterator.next();
-            System.out.println("[DEBUG] Found customer with status: " + c.getStatus());
-
             if (c.getStatus() == Customer.Status.WAITING) {
                 c.setStatus(Customer.Status.BEING_SERVED);
-                System.out.println("[DEBUG] Found a waiting customer! ID: " + c.getID());
                 return c;
             }
         }
@@ -113,11 +109,9 @@ public class MinibusTerminal {
         System.out.println("Summary report for current terminal situation");
         System.out.println("[TMN]  capacity : " + terminalQueue.size());
         int count = 0;
-        for (Customer c : terminalQueue) {
-            if (c.getHasTicket().get()) {
-                count++;
-            }
-            System.out.println(c.getID() + ": customer status: " + c.getStatus());
+        for(Customer c : terminalQueue) {
+            if(c.getHasTicket().get()) count++;
+            System.out.println("customer status: " + c.getStatus());
         }
         System.out.println("[TMN-W] capacit: " + count);
         System.out.println("[WAA]  capacity : " + waitingAreaA.getQueue().size());

@@ -91,10 +91,8 @@ public class Customer implements Runnable {
             return; // if terminal is closed, don't process the customer
         }
         while (!MinibusTerminal.isClosed.get()) {
-            if (terminalQueue.remainingCapacity() <= 0) {
+            if (terminalQueue.remainingCapacity() < 1) {
                 MinibusTerminal.isFull.set(true);
-            } else if (terminalQueue.size() <= terminal.MIN_AVAILABLE_CAPACITY) {
-                MinibusTerminal.isFull.set(false);
             }
 
             System.out.println("[Customer] Customer " + customerID + " is coming from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
