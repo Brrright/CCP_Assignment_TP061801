@@ -35,7 +35,7 @@ public class CCP_Assignment_TP061801 {
         new Thread(booth1).start();
         new Thread(booth2).start();
         new Thread(machine).start();
-        new Thread(inspector).start();
+//        new Thread(inspector).start();
         new Thread(busA).start();
         new Thread(busB).start();
         new Thread(busC).start();

@@ -62,6 +62,9 @@ public class Timer extends Thread {
         synchronized (i.lock) {
             i.lock.notify();
         }
-        MinibusTerminal.isClosed.set(true);
+        if (t.terminalQueue.size() == 0) {
+            System.out.println("omg it invoked");
+            MinibusTerminal.isClosed.set(true);
+        }
     }
 }
