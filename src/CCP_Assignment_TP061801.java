@@ -20,7 +20,7 @@ public class CCP_Assignment_TP061801 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("[Terminal] Good dayyooo, our terminal is operating from now!! :D");
+        System.out.println("[Terminal] \"Good dayyooo, our terminal is operating from now!! :D\"");
         MinibusTerminal terminal = new MinibusTerminal();
 
         TicketBooth booth1 = new TicketBooth(terminal, "1");
@@ -47,5 +47,9 @@ public class CCP_Assignment_TP061801 {
 
         Timer timer = new Timer(custGenerator, terminal);
         new Thread(timer).start();
+        inspector.stopInspection();
+        synchronized (inspector.lock) {
+            inspector.lock.notify(); 
+        }
     }
 }

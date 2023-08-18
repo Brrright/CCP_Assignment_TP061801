@@ -13,7 +13,8 @@ import java.util.Queue;
 public class Inspector implements Runnable {
 
     private MinibusTerminal terminal;
-    private final Object lock = new Object();
+    public final Object lock = new Object();
+    private boolean shouldStop = false;
 
     public Inspector(MinibusTerminal terminal) {
         this.terminal = terminal;
@@ -23,6 +24,14 @@ public class Inspector implements Runnable {
         synchronized (lock) {
             lock.notify(); // Notify the inspector when a bus arrives
         }
+    }
+
+    public void stopInspection() {
+        shouldStop = true;
+    }
+
+    public boolean shouldStop() {
+        return shouldStop;
     }
 
     private void checkTicketsInWaitingArea(WaitingArea area) {
@@ -44,7 +53,7 @@ public class Inspector implements Runnable {
 
     @Override
     public void run() {
-        while (!terminal.isClosed.get()) {
+        while (!terminal.isClosed.get() && !shouldStop()) {
             synchronized (lock) {
                 while (!terminal.isClosed.get()) {
                     try {
@@ -55,8 +64,8 @@ public class Inspector implements Runnable {
                 }
             }
 
-            if (!terminal.isClosed.get()) {
-                return; 
+            if (!shouldStop()) {
+                return;
             }
             checkTicketsInWaitingArea(terminal.getWaitingAreaA());
             checkTicketsInWaitingArea(terminal.getWaitingAreaB());
