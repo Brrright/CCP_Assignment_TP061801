@@ -62,7 +62,7 @@ public class Inspector implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("[Inspector] Inspector moving to Departure Gate " + wa + ". (" + wa.getQueue().size() + "/10)");
+        System.out.println("[Inspector] Inspector moving to Departure Gate " + wa.getName() + ". (" + wa.getQueue().size() + "/10)");
     }
 
     @Override

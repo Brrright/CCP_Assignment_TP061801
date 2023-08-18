@@ -56,34 +56,26 @@ public class MinibusTerminal {
         printTerminalAndWaitingAreaCapacity();
 
         if (null != customer.getTicket().getDestination()) {
+            WaitingArea targetArea = null;
+
             switch (customer.getTicket().getDestination()) {
                 case DESTINATION_A:
-                    if (!waitingAreaA.addToWaitingArea(customer)) { // If offer returns false, queue is full
-                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
-                    } else {
-                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-                        terminalQueue.remove(customer);
-                    }
+                    targetArea = waitingAreaA;
                     break;
                 case DESTINATION_B:
-                    if (!waitingAreaB.addToWaitingArea(customer)) {
-                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
-                    } else {
-                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area B. (" + waitingAreaB.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-                        terminalQueue.remove(customer);
-                    }
+                    targetArea = waitingAreaB;
                     break;
                 case DESTINATION_C:
-                    if (!waitingAreaC.addToWaitingArea(customer)) {
-                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
-                    } else {
-                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area C. (" + waitingAreaC.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-                        terminalQueue.remove(customer);
-                    }
+                    targetArea = waitingAreaC;
                     break;
                 default:
-                    break;
+                    return;
             }
+
+            targetArea.addToWaitingArea(customer);
+
+            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area " + customer.getTicket().getDestination() + ". (" + targetArea.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
+            terminalQueue.remove(customer);
         }
     }
 
@@ -116,6 +108,12 @@ public class MinibusTerminal {
         System.out.println("-------------------------------------------------------");
         System.out.println("Summary report for current terminal situation");
         System.out.println("[TMN]  capacity : " + terminalQueue.size());
+        int count = 0;
+        for(Customer c : terminalQueue) {
+            if(c.getHasTicket().get()) count++;
+            System.out.println("customer status: " + c.getStatus());
+        }
+        System.out.println("[TMN-W] capacit: " + count);
         System.out.println("[WAA]  capacity : " + waitingAreaA.getQueue().size());
         System.out.println("[WAB]  capacity : " + waitingAreaB.getQueue().size());
         System.out.println("[WAC]  capacity : " + waitingAreaC.getQueue().size());

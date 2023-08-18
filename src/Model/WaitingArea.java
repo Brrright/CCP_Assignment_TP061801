@@ -32,12 +32,20 @@ public class WaitingArea {
 //    public void addToWaitingArea(Customer customer) throws InterruptedException {
 //        waitingAreaQueue.put(customer); // This will wait until there's space available
 //    }
-    public boolean addToWaitingArea(Customer customer) {
-        return waitingAreaQueue.offer(customer); // Returns true if added successfully, false if queue is full
+    public synchronized void addToWaitingArea(Customer customer) throws InterruptedException {
+        while (waitingAreaQueue.size() == WAITING_AREA_CAPACITY) {
+            this.wait();  // wait until there's space
+        }
+        waitingAreaQueue.offer(customer);
+        this.notifyAll();
     }
 
-    public void removeCustomer(Customer customer) {
-        waitingAreaQueue.remove(customer);
+    public synchronized boolean removeFromWaitingArea(Customer customer) {
+        boolean result = this.waitingAreaQueue.remove(customer);
+        if (result) {
+            this.notifyAll(); // Notify all waiting threads that a space has opened up
+        }
+        return result;
     }
 
     public String getName() {
