@@ -22,6 +22,7 @@ public class MinibusTerminal {
 
     public static AtomicBoolean isFull = new AtomicBoolean(false);
     public static AtomicBoolean isClosed = new AtomicBoolean(false);
+//    public static AtomicBoolean isAcceptingNewEntries = new AtomicBoolean(true);
 
     public static final int WEST_ENTRANCE = 1;
     public static final int EAST_ENTRANCE = 2;

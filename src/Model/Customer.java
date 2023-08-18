@@ -37,7 +37,7 @@ public class Customer implements Runnable {
     public int getID() {
         return this.customerID;
     }
-    
+
     public long getTimestamp() {
         return this.timestamp;
     }
@@ -96,6 +96,11 @@ public class Customer implements Runnable {
             }
 
             System.out.println("[Customer] Customer " + customerID + " is coming from " + (entrance == WEST_ENTRANCE ? "West" : "East") + " entrance.");
+//            if (!MinibusTerminal.isAcceptingNewEntries.get()) {
+//                System.out.println("[Terminal] Terminal is closing soon, come again tomorrow.");
+//                System.out.println("[Customer] Customer " + customerID + " go back home :(");
+//                return;
+//            }
             if (MinibusTerminal.isFull.get()) {
                 if (MinibusTerminal.terminalQueue.size() > MinibusTerminal.MIN_AVAILABLE_CAPACITY) {
                     System.out.println("[Terminal] Still a lot of people, please wait for a while.");

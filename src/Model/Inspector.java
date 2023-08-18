@@ -50,11 +50,20 @@ public class Inspector implements Runnable {
                 System.out.println("[Inspector] Checked ticket for Customer " + customer.getID() + " in " + area.getName());
             }
             try {
-                Thread.sleep(250);
+                Thread.sleep(150);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void moveToAnotherGate(WaitingArea wa) {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("[Inspector] Inspector moving to Departure Gate " + wa + ". (" + wa.getQueue().size() + "/10)");
     }
 
     @Override
@@ -73,17 +82,23 @@ public class Inspector implements Runnable {
             }
 
             if (terminal.isClosed.get()) {
-                break; 
+                break;
             }
 
+            System.out.println("[Inspector] Bus arrived, queue up please!");
+            moveToAnotherGate(terminal.getWaitingAreaA());
             checkTicketsInWaitingArea(terminal.getWaitingAreaA());
+            moveToAnotherGate(terminal.getWaitingAreaB());
             checkTicketsInWaitingArea(terminal.getWaitingAreaB());
+            moveToAnotherGate(terminal.getWaitingAreaC());
             checkTicketsInWaitingArea(terminal.getWaitingAreaC());
+            moveToAnotherGate(terminal.getWaitingAreaB());
             checkTicketsInWaitingArea(terminal.getWaitingAreaB());
+            moveToAnotherGate(terminal.getWaitingAreaA());
             checkTicketsInWaitingArea(terminal.getWaitingAreaA());
 
             try {
-                Thread.sleep(500);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
