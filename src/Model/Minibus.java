@@ -31,6 +31,11 @@ public class Minibus implements Runnable {
         setArrivalStatus(true);
         inspector.signalArrival(); // Notifying the inspector that a bus has arrived
     }
+    
+    public void depart(Inspector inspector) {
+        setArrivalStatus(false);
+        inspector.signalArrival(); //?
+    }
 
     private static final int MAX_CAPACITY = 10;
 
@@ -79,7 +84,6 @@ public class Minibus implements Runnable {
             try {
                 switch (status) {
                     case ARRIVING:
-
                         System.out.println("[Bus " + id + "] is coming in 5 seconds.");
                         Thread.sleep(5000);
                         if (new Random().nextInt(10) > 2) {
@@ -99,10 +103,11 @@ public class Minibus implements Runnable {
                         System.out.println("[Bus " + id + "] Waiting at terminal (Departure gate " + waitingArea.getName() + ") for departure to " + destination + ".  Departing in 10 seconds.");
                         // TODO: remove later
 //                        Thread.sleep(3000);
-                        Thread.sleep(10000);
+                        Thread.sleep(7000);
                         status = BusStatus.DEPARTING;
                         break;
                     case DEPARTING:
+                        depart(inspector);
                         // Take the customers from the waiting area
                         int customersServed = 0;
 //                        while (waitingArea.getQueue().size() > 0) {

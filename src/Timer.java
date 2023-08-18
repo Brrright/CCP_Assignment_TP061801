@@ -25,7 +25,7 @@ public class Timer extends Thread {
     public void run() {
         try {
 
-            Thread.sleep(60000);
+            Thread.sleep(50000);
             t.printTerminalAndWaitingAreaCapacity();
 
             // clear entrance queue, block customer from coming in, say that we are closing soon, no more customer will be accepted
@@ -40,8 +40,23 @@ public class Timer extends Thread {
 
     public synchronized void closeTerminal() {
         System.out.println("====================================================");
-        System.out.println("[Terminal] We're closing now! Bye bye guys :]");
+        System.out.println("[Terminal] We're closing soon! No more customers will be accepted :]");
         System.out.println("====================================================");
+
+        MinibusTerminal.isAcceptingNewEntries.set(false);
+
+        // Wait until terminal is empty
+        while (t.terminalQueue.size() > 0
+                || t.getWaitingAreaA().getQueue().size() > 0
+                || t.getWaitingAreaB().getQueue().size() > 0
+                || t.getWaitingAreaC().getQueue().size() > 0) {
+            try {
+                wait(1000);  // wait for 1 second before checking again.
+                t.printTerminalAndWaitingAreaCapacity();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         i.stopInspection();
 
         synchronized (i.lock) {

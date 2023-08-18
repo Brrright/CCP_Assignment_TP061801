@@ -20,8 +20,8 @@ public class WaitingArea {
     public WaitingArea(String name) {
         this.name = name;
     }
-    
-    public BlockingQueue<Customer> getQueue(){
+
+    public BlockingQueue<Customer> getQueue() {
         return this.waitingAreaQueue;
     }
 
@@ -29,8 +29,11 @@ public class WaitingArea {
         return waitingAreaQueue.size() == WAITING_AREA_CAPACITY;
     }
 
-    public void addToWaitingArea(Customer customer) throws InterruptedException {
-        waitingAreaQueue.put(customer); // This will wait until there's space available
+//    public void addToWaitingArea(Customer customer) throws InterruptedException {
+//        waitingAreaQueue.put(customer); // This will wait until there's space available
+//    }
+    public boolean addToWaitingArea(Customer customer) {
+        return waitingAreaQueue.offer(customer); // Returns true if added successfully, false if queue is full
     }
 
     public void removeCustomer(Customer customer) {

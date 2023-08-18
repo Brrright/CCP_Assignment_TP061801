@@ -22,6 +22,7 @@ public class MinibusTerminal {
 
     public static AtomicBoolean isFull = new AtomicBoolean(false);
     public static AtomicBoolean isClosed = new AtomicBoolean(false);
+    public static AtomicBoolean isAcceptingNewEntries = new AtomicBoolean(true);
 
     public static final int WEST_ENTRANCE = 1;
     public static final int EAST_ENTRANCE = 2;
@@ -54,21 +55,36 @@ public class MinibusTerminal {
     public synchronized void moveCustomerToWaitingArea(Customer customer) throws InterruptedException {
         printTerminalAndWaitingAreaCapacity();
 
-        if (customer.getTicket().getDestination() == Destination.DESTINATION_A && !waitingAreaA.isFull()) {
-            waitingAreaA.addToWaitingArea(customer);
-            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-        } else if (customer.getTicket().getDestination() == Destination.DESTINATION_B && !waitingAreaB.isFull()) {
-            waitingAreaB.addToWaitingArea(customer);
-            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area B. (" + waitingAreaB.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-
-        } else if (customer.getTicket().getDestination() == Destination.DESTINATION_C && !waitingAreaC.isFull()) {
-            waitingAreaC.addToWaitingArea(customer);
-            System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area C. (" + waitingAreaC.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
-        } else {
-            System.out.println("[WaitArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
-            return;
+        if (null != customer.getTicket().getDestination()) {
+            switch (customer.getTicket().getDestination()) {
+                case DESTINATION_A:
+                    if (!waitingAreaA.addToWaitingArea(customer)) { // If offer returns false, queue is full
+                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+                    } else {
+                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area A. (" + waitingAreaA.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
+                        terminalQueue.remove(customer);
+                    }
+                    break;
+                case DESTINATION_B:
+                    if (!waitingAreaB.addToWaitingArea(customer)) {
+                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+                    } else {
+                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area B. (" + waitingAreaB.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
+                        terminalQueue.remove(customer);
+                    }
+                    break;
+                case DESTINATION_C:
+                    if (!waitingAreaC.addToWaitingArea(customer)) {
+                        System.out.println("[WaitingArea] Waiting area for destination " + customer.getTicket().getDestination() + " is full! Customer " + customer.getID() + " is waiting in the foyer.");
+                    } else {
+                        System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area C. (" + waitingAreaC.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
+                        terminalQueue.remove(customer);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
-        terminalQueue.remove(customer);
     }
 
     public void add(Customer customer) throws InterruptedException {
