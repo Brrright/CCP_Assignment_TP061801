@@ -55,9 +55,6 @@ public class TicketMachine implements Runnable {
                     System.out.println("****************************************************");
                     System.out.println("[Customer] Customer " + customer.getID() + ":  \"AIYO HAIYA, I will go to ticket booth now...\"");
                     customer.resetTicketStatus();
-//                    customer.setStatus(Customer.Status.WAITING);
-//                    customer.setTicket(null);
-//                    customer.setHasTicket(false);
                     continue; // skip current iteration
                 }
                 try {
