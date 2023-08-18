@@ -47,7 +47,7 @@ public class TicketMachine implements Runnable {
             if (customer != null) {
                 System.out.println("[Customer] Customer " + customer.getID() + " found Ticket Machine available");
                 System.out.println("[Customer] Customer " + customer.getID() + " is buying ticket from Ticket Machine");
-                if (new Random().nextInt(10) > 1) { // 1 in 10 chance for the machine to break
+                if (new Random().nextInt(15) < 1) { // 1 in 15 chance for the machine to break
                     System.out.println("****************************************************");
                     System.out.println("[TMachine] Machine CRASHED! Restarting...");
                     broken.set(true);

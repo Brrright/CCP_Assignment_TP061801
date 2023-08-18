@@ -96,7 +96,7 @@ public class MinibusTerminal {
         return this.waitingAreaC;
     }
 
-    private void printTerminalAndWaitingAreaCapacity() {
+    public void printTerminalAndWaitingAreaCapacity() {
         System.out.println("-------------------------------------------------------");
         System.out.println("Summary report for current terminal situation");
         System.out.println("[TMN]  capacity : " + terminalQueue.size());

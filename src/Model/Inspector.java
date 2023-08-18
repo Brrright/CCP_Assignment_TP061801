@@ -22,12 +22,18 @@ public class Inspector implements Runnable {
 
     public void signalArrival() {
         synchronized (lock) {
+            System.out.println("signal arrival has been called!");
             lock.notify(); // Notify the inspector when a bus arrives
+            resumeInspection();
         }
     }
 
     public void stopInspection() {
         shouldStop = true;
+    }
+
+    public void resumeInspection() {
+        shouldStop = false;
     }
 
     public boolean shouldStop() {
@@ -53,20 +59,23 @@ public class Inspector implements Runnable {
 
     @Override
     public void run() {
-        while (!terminal.isClosed.get() && !shouldStop()) {
+        while (true) {
             synchronized (lock) {
-                while (!terminal.isClosed.get()) {
-                    try {
-                        lock.wait(); // Inspector waits until a bus arrives
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    lock.wait(); // Inspector waits until a bus arrives or it is told to stop.
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
 
-            if (!shouldStop()) {
-                return;
+            if (shouldStop()) {
+                continue;
             }
+
+            if (terminal.isClosed.get()) {
+                break; 
+            }
+
             checkTicketsInWaitingArea(terminal.getWaitingAreaA());
             checkTicketsInWaitingArea(terminal.getWaitingAreaB());
             checkTicketsInWaitingArea(terminal.getWaitingAreaC());
@@ -74,7 +83,7 @@ public class Inspector implements Runnable {
             checkTicketsInWaitingArea(terminal.getWaitingAreaA());
 
             try {
-                Thread.sleep(1000); // Sleep for 1 seconds before next check
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -53,7 +53,7 @@ public class TicketBooth implements Runnable {
             Customer customer = terminal.getFirstWaitingCustomerAndSetBeingServed();
 
             // set toilet break
-            if ((!MinibusTerminal.isClosed.get()) && customer == null && new Random().nextInt(10) == 0) { // 1 in 10 chance for a toilet break if not serving
+            if ((!MinibusTerminal.isClosed.get()) && customer == null && new Random().nextInt(10) == 0 && terminal.terminalQueue.remainingCapacity() != 15) { // 1/15chance for a toilet break if not serving
                 System.out.println("***********************************************************************************");
                 System.out.println("[T_Booth" + this.name + "] Let's take a toilet break. Ticket Booth " + this.name + " NOT available now, please wait.");
                 System.out.println("***********************************************************************************");

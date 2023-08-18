@@ -35,21 +35,17 @@ public class CCP_Assignment_TP061801 {
         new Thread(booth1).start();
         new Thread(booth2).start();
         new Thread(machine).start();
+        new Thread(inspector).start();
         new Thread(busA).start();
         new Thread(busB).start();
         new Thread(busC).start();
-        new Thread(inspector).start();
 
         // start  operation + timer
         CustomerGenerator custGenerator = new CustomerGenerator(terminal);
         Thread cgThread = new Thread(custGenerator);
         cgThread.start();
 
-        Timer timer = new Timer(custGenerator, terminal);
+        Timer timer = new Timer(custGenerator, terminal, inspector);
         new Thread(timer).start();
-        inspector.stopInspection();
-        synchronized (inspector.lock) {
-            inspector.lock.notify(); 
-        }
     }
 }

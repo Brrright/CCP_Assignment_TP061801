@@ -47,7 +47,7 @@ public class Minibus implements Runnable {
         this.id = id;
         this.destination = destination;
         this.terminal = terminal;
-        this.status = BusStatus.WAITING;
+        this.status = BusStatus.ARRIVING;
         this.isDelayed = false;
         this.inspector = inspector;
         switch (destination) {
@@ -79,6 +79,7 @@ public class Minibus implements Runnable {
             try {
                 switch (status) {
                     case ARRIVING:
+
                         System.out.println("[Bus " + id + "] is coming in 5 seconds.");
                         Thread.sleep(5000);
                         if (new Random().nextInt(10) > 2) {
@@ -87,10 +88,14 @@ public class Minibus implements Runnable {
                             Thread.sleep(delay);
                             this.setNoDelay(); // resetting to no delay
                         }
+                        if (!isDelayed) {
+                            arrive(inspector);
+                        }
                         System.out.println("[Bus " + id + "] Arrived at terminal (Departure gate " + waitingArea.getName() + ") for " + destination);
                         status = BusStatus.WAITING;
                         break;
                     case WAITING: // INITIAL STATE
+//                        arrive(inspector);
                         System.out.println("[Bus " + id + "] Waiting at terminal (Departure gate " + waitingArea.getName() + ") for departure to " + destination + ".  Departing in 10 seconds.");
                         // TODO: remove later
 //                        Thread.sleep(3000);
@@ -100,12 +105,23 @@ public class Minibus implements Runnable {
                     case DEPARTING:
                         // Take the customers from the waiting area
                         int customersServed = 0;
-                        while (waitingArea.getQueue().size() > 0) {
+//                        while (waitingArea.getQueue().size() > 0) {
+                        for (int i = 0; i < waitingArea.getQueue().size(); i++) {
                             // later for inspector to check here maybe?
                             Customer customer = waitingArea.getQueue().poll();
-                            System.out.println("[Bus " + id + "] Customers " + customer.getID() + " onboarding the bus " + this.id);
+                            if (!customer.getTicket().isCheckedByInspector()) {
+                                System.out.println("[Bus " + id + "] Customer " + customer.getID() + "'s ticket haven't check by inspector, go back to waiting area.");
+                                waitingArea.addToWaitingArea(customer);
+                                continue;
+                            }
+                            System.out.println("[Bus " + id + "] Customer " + customer.getID() + " onboarding the bus " + this.id);
                             customersServed++;
                         }
+//                        if(customersServed == 0){
+//                            System.out.println("[Bus " + id + "] Hmm, seems like there is no customer, let's wait next round.");
+//                            continue;
+                        // this need to wait and get notify once the waiting area got 10 ppl is checked by inpector :v oh nooo
+//                        }
                         System.out.println("[Bus " + id + "] Lesgo! Departing to " + destination + " (Customer onboarded: " + customersServed + ")");
                         Thread.sleep(5000);
                         System.out.println("[Bus " + id + "] Delivered " + customersServed + " customers to " + destination);
