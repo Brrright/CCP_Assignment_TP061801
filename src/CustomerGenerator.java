@@ -30,7 +30,6 @@ public class CustomerGenerator implements Runnable {
         while (!terminal.isClosed.get() && counter.incrementAndGet() <= MAX_CUSTOMERS) {
             Customer c = new Customer(terminal, counter.get());
             setEntrance(c);
-            // interval
             try {
                 Thread.sleep((long) ((Math.random()) * 2) * 1000);
             } catch (InterruptedException ex) {
@@ -48,7 +47,6 @@ public class CustomerGenerator implements Runnable {
                 e.printStackTrace();
             }
         }
-        // checking terminal queue, if no people, do notify all thread
     }
 
     public void setEntrance(Customer c) {

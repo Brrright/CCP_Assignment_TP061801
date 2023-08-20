@@ -27,14 +27,13 @@ public class Minibus implements Runnable {
     }
 
     public void arrive(Inspector inspector) {
-        // Bus arrival logic...
         setArrivalStatus(true);
         inspector.signalArrival(); // Notifying the inspector that a bus has arrived
     }
     
     public void depart(Inspector inspector) {
         setArrivalStatus(false);
-        inspector.signalArrival(); //?
+        inspector.signalArrival();
     }
 
     private static final int MAX_CAPACITY = 10;
@@ -98,22 +97,16 @@ public class Minibus implements Runnable {
                         System.out.println("[Bus " + id + "] Arrived at terminal (Departure gate " + waitingArea.getName() + ") for " + destination);
                         status = BusStatus.WAITING;
                         break;
-                    case WAITING: // INITIAL STATE
-//                        arrive(inspector);
+                    case WAITING: 
                         System.out.println("[Bus " + id + "] Waiting at terminal (Departure gate " + waitingArea.getName() + ") for departure to " + destination + ".  Departing in 10 seconds.");
-                        // TODO: remove later
-//                        Thread.sleep(3000);
                         Thread.sleep(7000);
                         status = BusStatus.DEPARTING;
                         break;
                     case DEPARTING:
                         depart(inspector);
-                        // Take the customers from the waiting area
                         int customersServed = 0;
-//                        while (waitingArea.getQueue().size() > 0) {
-                        for (int i = 0; i < waitingArea.getQueue().size(); i++) {
-                            // later for inspector to check here maybe?
-                            Customer customer = waitingArea.getQueue().poll();
+                        for (int i = 0; i < waitingArea.getQueue().size(); i++) { // WA's queue max is 10
+                            Customer customer = waitingArea.retrieveFromWaitingArea();
                             if (!customer.getTicket().isCheckedByInspector()) {
                                 System.out.println("[Bus " + id + "] Customer " + customer.getID() + "'s ticket haven't check by inspector, go back to waiting area.");
                                 waitingArea.addToWaitingArea(customer);
@@ -122,11 +115,6 @@ public class Minibus implements Runnable {
                             System.out.println("[Bus " + id + "] Customer " + customer.getID() + " onboarding the bus " + this.id);
                             customersServed++;
                         }
-//                        if(customersServed == 0){
-//                            System.out.println("[Bus " + id + "] Hmm, seems like there is no customer, let's wait next round.");
-//                            continue;
-                        // this need to wait and get notify once the waiting area got 10 ppl is checked by inpector :v oh nooo
-//                        }
                         System.out.println("[Bus " + id + "] Lesgo! Departing to " + destination + " (Customer onboarded: " + customersServed + ")");
                         Thread.sleep(5000);
                         System.out.println("[Bus " + id + "] Delivered " + customersServed + " customers to " + destination);

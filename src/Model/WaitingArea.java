@@ -37,12 +37,12 @@ public class WaitingArea {
             this.wait();  // wait until there's space
         }
         waitingAreaQueue.offer(customer);
-        this.notifyAll();
+//        this.notifyAll();
     }
 
-    public synchronized boolean removeFromWaitingArea(Customer customer) {
-        boolean result = this.waitingAreaQueue.remove(customer);
-        if (result) {
+    public synchronized Customer retrieveFromWaitingArea() {
+        Customer result = this.waitingAreaQueue.poll();
+        if (result!=null) {
             this.notifyAll(); // Notify all waiting threads that a space has opened up
         }
         return result;

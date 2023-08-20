@@ -30,7 +30,6 @@ public class TicketBooth implements Runnable {
     @Override
     public void run() {
         while (!MinibusTerminal.isClosed.get()) {
-            System.out.println("...booth working1");
             // check if toilet break.
             if (toiletBreak.get() && terminal.terminalQueue.size() != 0) {
                 // Staff is on a toilet break, sleep for a while
@@ -44,7 +43,6 @@ public class TicketBooth implements Runnable {
                 System.out.println("[T_Booth" + this.name + "] Staff: I'm back, next customer comeeee!");
                 toiletBreak.set(false);
             }
-            System.out.println("...booth working2");
 
             // Make the delay for checking for a waiting customer
             try {
@@ -52,12 +50,11 @@ public class TicketBooth implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("...booth working3");
 
             Customer customer = terminal.getFirstWaitingCustomerAndSetBeingServed();
 
             // set toilet break
-            if ((!MinibusTerminal.isClosed.get()) && customer == null && new Random().nextInt(15) == 0 && terminal.terminalQueue.size() != 0) { // 1/15chance for a toilet break if not serving
+            if ((!MinibusTerminal.isClosed.get()) && customer == null && new Random().nextInt(12) == 0 && terminal.terminalQueue.size() != 0) { // 1/15chance for a toilet break if not serving
                 System.out.println("***********************************************************************************");
                 System.out.println("[T_Booth" + this.name + "] Let's take a toilet break. Ticket Booth " + this.name + " NOT available now, please wait.");
                 System.out.println("***********************************************************************************");

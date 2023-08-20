@@ -40,24 +40,22 @@ public class MinibusTerminal {
         eastEntranceQueue.clear();
     }
 
-    public synchronized Customer getFirstWaitingCustomerAndSetBeingServed() {
-        System.out.println("[DEBUG] Checking for waiting customers...");
-        Iterator<Customer> iterator = terminalQueue.iterator();
-        while (iterator.hasNext()) {
-            Customer c = iterator.next();
-            System.out.println("[DEBUG] Found customer with status: " + c.getStatus());
-
-            if (c.getStatus() == Customer.Status.WAITING) {
-                c.setStatus(Customer.Status.BEING_SERVED);
-                System.out.println("[DEBUG] Found a waiting customer! ID: " + c.getID());
-                return c;
+    public Customer getFirstWaitingCustomerAndSetBeingServed() {
+        synchronized (terminalQueue) {
+            Iterator<Customer> iterator = terminalQueue.iterator();
+            while (iterator.hasNext()) {
+                Customer c = iterator.next();
+                if (c.getStatus() == Customer.Status.WAITING) {
+                    c.setStatus(Customer.Status.BEING_SERVED);
+                    return c;
+                }
             }
         }
         return null;
     }
 
     public synchronized void moveCustomerToWaitingArea(Customer customer) throws InterruptedException {
-        printTerminalAndWaitingAreaCapacity();
+//        printTerminalAndWaitingAreaCapacity();
 
         if (null != customer.getTicket().getDestination()) {
             WaitingArea targetArea = null;
@@ -77,7 +75,6 @@ public class MinibusTerminal {
             }
 
             targetArea.addToWaitingArea(customer);
-
             System.out.println("[Customer] Customer " + customer.getID() + " has entered Waiting Area " + customer.getTicket().getDestination() + ". (" + targetArea.getQueue().size() + "/" + WaitingArea.WAITING_AREA_CAPACITY + ")");
             terminalQueue.remove(customer);
         }

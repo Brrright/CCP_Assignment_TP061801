@@ -44,7 +44,6 @@ public class Inspector implements Runnable {
         for (Customer customer : queue) {
             Ticket ticket = customer.getTicket();
             if (!ticket.isCheckedByInspector()) {
-                // Assuming Ticket has a method to set it as checked
                 ticket.setCheckedByInspector(true);
                 System.out.println("[Inspector] Checked ticket for Customer " + customer.getID() + " in " + area.getName());
             }
@@ -80,26 +79,24 @@ public class Inspector implements Runnable {
                 continue;
             }
 
-            if (terminal.isClosed.get()) {
-                break;
-            }
-            
-            System.out.println("[Inspector] Bus arrived, queue up please!");
-            moveToAnotherGate(terminal.getWaitingAreaA());
-            checkTicketsInWaitingArea(terminal.getWaitingAreaA());
-            moveToAnotherGate(terminal.getWaitingAreaB());
-            checkTicketsInWaitingArea(terminal.getWaitingAreaB());
-            moveToAnotherGate(terminal.getWaitingAreaC());
-            checkTicketsInWaitingArea(terminal.getWaitingAreaC());
-            moveToAnotherGate(terminal.getWaitingAreaB());
-            checkTicketsInWaitingArea(terminal.getWaitingAreaB());
-            moveToAnotherGate(terminal.getWaitingAreaA());
-            checkTicketsInWaitingArea(terminal.getWaitingAreaA());
+            while (!terminal.isClosed.get()) {
+                System.out.println("[Inspector] Bus arrived, queue up please!");
+                moveToAnotherGate(terminal.getWaitingAreaA());
+                checkTicketsInWaitingArea(terminal.getWaitingAreaA());
+                moveToAnotherGate(terminal.getWaitingAreaB());
+                checkTicketsInWaitingArea(terminal.getWaitingAreaB());
+                moveToAnotherGate(terminal.getWaitingAreaC());
+                checkTicketsInWaitingArea(terminal.getWaitingAreaC());
+                moveToAnotherGate(terminal.getWaitingAreaB());
+                checkTicketsInWaitingArea(terminal.getWaitingAreaB());
+                moveToAnotherGate(terminal.getWaitingAreaA());
+                checkTicketsInWaitingArea(terminal.getWaitingAreaA());
 
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
